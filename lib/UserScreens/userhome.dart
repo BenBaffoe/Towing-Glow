@@ -625,18 +625,16 @@ class _UserhomeState extends State<Userhome> {
     }
   }
 
-  // createActiveNearbyDriverMarker() {
-  //   if (activeNearbyIcon == null) {
-  //     ImageConfiguration imageConfiguration = createLocalImageConfiguration(
-  //       context, /* include size of image*/
-  //     );
-  //     // BitmapDescriptor.fromAssetImage(
-  //     //   imageConfiguration, /* image url''*/
-  //     // ).then((value) {
-  //     //   activeNearbyIcon = value;
-  //     // });
-  //   }
-  // }
+  createActiveNearbyDriverMarker() {
+    if (activeNearbyIcon == null) {
+      ImageConfiguration imageConfiguration = createLocalImageConfiguration(
+        context, /* include size of image*/
+      );
+      BitmapDescriptor.fromAssetImage(imageConfiguration, '').then((value) {
+        activeNearbyIcon = value;
+      });
+    }
+  }
 
   final Connectivity _connectivity = Connectivity();
   StreamSubscription<ConnectivityResult>? _connectivitySubscription;
@@ -959,7 +957,7 @@ class _UserhomeState extends State<Userhome> {
                                   Provider.of<AppInfo>(context)
                                               .userPickUpLocation !=
                                           null
-                                      ? "${(Provider.of<AppInfo>(context).userPickUpLocation!.locationName!).substring(0, 19)}..."
+                                      ? "${(Provider.of<AppInfo>(context).userPickUpLocation!.locationName!).substring(0, 24)}..."
                                       : "Getting Address...",
                                   style: const TextStyle(
                                       color: Colors.grey, fontSize: 14),
@@ -1249,7 +1247,7 @@ class _UserhomeState extends State<Userhome> {
 
   @override
   Widget build(BuildContext context) {
-    // createActiveNearbyDriverMarker();
+    //  createActiveNearbyDriverMarker();
     return Scaffold(
       key: _scaffoldState,
       drawer: DrawerScreen(),
