@@ -3,7 +3,7 @@ import 'package:onroadvehiclebreakdowwn/models/activeServiceProviders.dart';
 class GeofireAssistant {
   static List<ActiveServiceProviders> activeServiceList = [];
 
-  static get activeServiceProviderList => null;
+  // static get activeServiceProviderList => null;
 
   static void deletedOfflineDriverFromList(String serviceId) {
     int indexNumber = activeServiceList
@@ -17,10 +17,10 @@ class GeofireAssistant {
     int indexNumber = activeServiceList.indexWhere(
         (element) => element.serviceId == serviceProviderOnMove.serviceId);
 
-    activeServiceProviderList[indexNumber].locationLatitude =
+    activeServiceList[indexNumber].locationLatitude =
         serviceProviderOnMove.locationLatitude;
 
-    activeServiceProviderList[indexNumber].locationLongitude =
+    activeServiceList[indexNumber].locationLongitude =
         serviceProviderOnMove.locationLongitude;
   }
 

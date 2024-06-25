@@ -225,7 +225,7 @@ class _UserhomeState extends State<Userhome> {
     });
 
     onlineNearbyServiceProviderList = GeofireAssistant.activeServiceList;
-    // searchNearestOnlineDriver();
+    searchNearestOnlineDrivers(selectedVehicleType);
   }
 
   showAssignedDriverInfo() {
