@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "846686411265",
+    "project_id": "roadtoll-1",
+    "storage_bucket": "roadtoll-1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:846686411265:android:ff18939adfc822b0aa7e00",
+        "android_client_info": {
+          "package_name": "com.example.onroadvehiclebreakdowwn"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqApcZLH3tAn8deO07MeAj4nSx--k7oBo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:846686411265:android:8e9c362d72e42bc3aa7e00",
+        "android_client_info": {
+          "package_name": "com.example.service_providers_glow"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqApcZLH3tAn8deO07MeAj4nSx--k7oBo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
