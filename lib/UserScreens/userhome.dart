@@ -47,6 +47,8 @@ class _UserhomeState extends State<Userhome> {
 
   bool darkTheme = true;
 
+  String selectedVehicleType = "";
+
   double searchLocationContainerHeight = 220;
   double waitingLocationContainerHeight = 0;
   double assignedDriverInfoContainerHeight = 0;
@@ -62,13 +64,11 @@ class _UserhomeState extends State<Userhome> {
 
   String userRequestStatus = "";
 
-  // StreamSubscription<DatabaseEvent>? tripRidesRequestInfoStreamSubscription
+  //\ StreamSubscription<DatabaseEvent>? tripRidesRequestInfoStreamSubscription
 
   String serviceRideStatus = "On their way";
 
   bool openNavigationDrawer = true;
-
-  String selectedVehicleType = "";
 
   LocationPermission? _locationPermission;
 
@@ -94,7 +94,7 @@ class _UserhomeState extends State<Userhome> {
     });
   }
 
-  saveSelection() {
+  saveSelection(String selectedVehicleType) {
     //save ServiceRequest
     referenceRequest =
         FirebaseDatabase.instance.ref().child("All Service Requests").push();
@@ -228,7 +228,7 @@ class _UserhomeState extends State<Userhome> {
     searchNearestOnlineDrivers(selectedVehicleType);
   }
 
-  showAssignedDriverInfo() {
+  showAssignedServiceProviderInfo() {
     setState(() {
       waitingLocationContainerHeight = 0;
       searchLocationContainerHeight = 0;
@@ -239,19 +239,24 @@ class _UserhomeState extends State<Userhome> {
   }
 
   Future<void> retrieveServiceProviderInfo(
-      List<ActiveServiceProviders> onlineNearestDriversList) async {
+      List<ActiveServiceProviders> onlineNearbyServiceProviderList) async {
     serviceProviderList.clear();
     DatabaseReference ref =
         FirebaseDatabase.instance.ref().child("Service Providers");
 
-    for (var driver in onlineNearestDriversList) {
-      await ref.child(driver.serviceId.toString()).once().then((dataSnapshot) {
+    for (int i = 0; i < onlineNearbyServiceProviderList.length; i++) {
+      await ref
+          .child(onlineNearbyServiceProviderList[i].serviceId.toString())
+          .once()
+          .then((dataSnapshot) {
         var driverKeyInfo = dataSnapshot.snapshot.value;
         serviceProviderList.add(driverKeyInfo);
         print("Service key Information: " + serviceProviderList.toString());
       });
     }
   }
+
+//  onlineNearbyServiceProvidersList  = GeofireAssistant.activeServiceList;
 
   Future<void> searchNearestOnlineDrivers(String selectedVehicleType) async {
     if (onlineNearbyServiceProviderList.isEmpty) {
@@ -298,7 +303,7 @@ class _UserhomeState extends State<Userhome> {
           .listen((event) {
         print("Event : ${event.snapshot.value}");
         if (event.snapshot.value != null && event.snapshot.value != "waiting") {
-          showAssignedDriverInfo();
+          showAssignedServiceProviderInfo();
         }
       });
     }
@@ -311,7 +316,7 @@ class _UserhomeState extends State<Userhome> {
 
   //intializeGeofire();
 
-  //AssistantMethods.readTripsKeysForOnlineUser(context);
+  // AssistantMethods.readTripsKeysForOnlineUser(context);
 
   updateArrivalTimeToUser(driverCurrentPositionLatLng) async {
     if (requestPositionInfo == true) {
@@ -628,9 +633,11 @@ class _UserhomeState extends State<Userhome> {
   createActiveNearbyDriverMarker() {
     if (activeNearbyIcon == null) {
       ImageConfiguration imageConfiguration = createLocalImageConfiguration(
-        context, /* include size of image*/
-      );
-      BitmapDescriptor.fromAssetImage(imageConfiguration, '').then((value) {
+          context,
+          /* include size of image*/ size: Size(0.2, 0.2));
+      BitmapDescriptor.fromAssetImage(
+              imageConfiguration, 'assets/towin_edited.png')
+          .then((value) {
         activeNearbyIcon = value;
       });
     }
@@ -1009,21 +1016,19 @@ class _UserhomeState extends State<Userhome> {
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
-                          selectedVehicleType == "Two Wheeler"
-                              ? (darkTheme
-                                  ? Colors.amber.shade400
-                                  : Colors.blue)
-                              : (darkTheme
-                                  ? Colors.black54
-                                  : Colors.grey.shade100);
+                          selectedVehicleType = "Two Wheeler";
                         });
-                        saveSelection();
+                        // saveSelection();
                       },
-                      child: Image.asset(
-                        "assets/Scooter-512.webp",
-                        height: 90,
-                        width: 90,
-                        color: _selectedIndex ? Colors.green : null,
+                      child: Container(
+                        color: selectedVehicleType == "Two Wheeler"
+                            ? Colors.black
+                            : Colors.white,
+                        child: Image.asset(
+                          "assets/Scooter-512.webp",
+                          height: 90,
+                          width: 90,
+                        ),
                       ),
                     ),
                   ),
@@ -1032,21 +1037,21 @@ class _UserhomeState extends State<Userhome> {
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
-                          selectedVehicleType == "Four Wheeler"
-                              ? (darkTheme
-                                  ? Colors.amber.shade400
-                                  : Colors.blue)
-                              : (darkTheme
-                                  ? Colors.black54
-                                  : Colors.grey.shade100);
+                          selectedVehicleType = "Four Wheeler";
                         });
 
-                        saveSelection();
+                        // saveSelection();
                       },
-                      child: Image.asset("assets/off-road-car-4x4-512.webp",
+                      child: Container(
+                        color: selectedVehicleType == "Four Wheeler"
+                            ? Colors.black
+                            : Colors.white,
+                        child: Image.asset(
+                          "assets/off-road-car-4x4-512.webp",
                           height: 80,
                           width: 75,
-                          color: _selectedIndex ? Colors.green : null),
+                        ),
+                      ),
                     ),
                   ),
                   Padding(
@@ -1054,22 +1059,20 @@ class _UserhomeState extends State<Userhome> {
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
-                          selectedVehicleType == "Heavy Wheeler"
-                              ? (darkTheme
-                                  ? Colors.amber.shade400
-                                  : Colors.blue)
-                              : (darkTheme
-                                  ? Colors.black54
-                                  : Colors.grey.shade100);
+                          selectedVehicleType = " Heavy Wheeler";
                         });
 
-                        saveSelection();
+                        // saveSelection();
                       },
-                      child: Image.asset(
-                        "assets/truck.png",
-                        height: 80,
-                        width: 75,
-                        color: _selectedIndex ? Colors.green : null,
+                      child: Container(
+                        color: selectedVehicleType == "Heavy Wheeler"
+                            ? Colors.black
+                            : Colors.white,
+                        child: Image.asset(
+                          "assets/truck.png",
+                          height: 80,
+                          width: 75,
+                        ),
                       ),
                     ),
                   ),
@@ -1082,29 +1085,21 @@ class _UserhomeState extends State<Userhome> {
                   padding: const EdgeInsets.fromLTRB(10, 0, 8, 4),
                   child: GestureDetector(
                     onTap: () {
-                      setState(() {
-                        selectedVehicleType = "Two Wheeler";
-                      });
-                      saveSelection();
+                      setState(() {});
+                      // saveSelection();
                     },
                     child: SizedBox(
                       height: 60,
                       width: 110,
                       child: ElevatedButton(
                         onPressed: () {
-                          setState(() {
-                            selectedVehicleType == " Two Wheeler"
-                                ? (darkTheme
-                                    ? Colors.amber.shade400
-                                    : Colors.blue)
-                                : (darkTheme
-                                    ? Colors.black54
-                                    : Colors.grey.shade100);
-                          });
-                          saveSelection();
+                          setState(() {});
+                          // saveSelection();
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
+                          backgroundColor: selectedVehicleType == "Two Wheeler"
+                              ? Colors.black
+                              : Colors.transparent,
                           shape: const RoundedRectangleBorder(
                             side: BorderSide.none,
                           ),
@@ -1114,10 +1109,10 @@ class _UserhomeState extends State<Userhome> {
                           " Two Wheeler",
                           style: TextStyle(
                             fontSize: 15,
-                            color: selectedVehicleType == "Two Wheeler"
-                                ? (darkTheme ? Colors.black : Colors.white)
-                                : (darkTheme ? Colors.white : Colors.black),
                             fontWeight: FontWeight.bold,
+                            color: selectedVehicleType == "Two Wheeler"
+                                ? Colors.white
+                                : Colors.black,
                           ),
                         ),
                       ),
@@ -1128,28 +1123,22 @@ class _UserhomeState extends State<Userhome> {
                   padding: const EdgeInsets.fromLTRB(10, 0, 8, 4),
                   child: GestureDetector(
                     onTap: () {
-                      setState(() {
-                        selectedVehicleType = "Four Wheeler";
-                      });
-                      saveSelection();
+                      setState(() {});
+                      // saveSelection();
                     },
                     child: SizedBox(
                       height: 60,
                       width: 110,
                       child: ElevatedButton(
                         onPressed: () {
-                          setState(() {
-                            selectedVehicleType == "Four Wheeler"
-                                ? (darkTheme
-                                    ? Colors.amber.shade400
-                                    : Colors.blue)
-                                : (darkTheme ? Colors.black54 : Colors.black54);
-                          });
+                          setState(() {});
 
-                          saveSelection();
+                          // saveSelection();
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
+                          backgroundColor: selectedVehicleType == "Four Wheeler"
+                              ? Colors.black
+                              : Colors.transparent,
                           shape: const RoundedRectangleBorder(
                             side: BorderSide.none,
                           ),
@@ -1159,10 +1148,10 @@ class _UserhomeState extends State<Userhome> {
                           " Four Wheeler",
                           style: TextStyle(
                             fontSize: 15,
-                            color: selectedVehicleType == "Four Wheeler"
-                                ? (darkTheme ? Colors.black : Colors.white)
-                                : (darkTheme ? Colors.white : Colors.black),
                             fontWeight: FontWeight.bold,
+                            color: selectedVehicleType == "Four Wheeler"
+                                ? Colors.white
+                                : Colors.black,
                           ),
                         ),
                       ),
@@ -1173,14 +1162,8 @@ class _UserhomeState extends State<Userhome> {
                   padding: const EdgeInsets.fromLTRB(10, 0, 8, 4),
                   child: GestureDetector(
                     onTap: () {
-                      setState(() {
-                        selectedVehicleType == "Heavy Wheeler"
-                            ? (darkTheme ? Colors.amber.shade400 : Colors.blue)
-                            : (darkTheme
-                                ? Colors.black54
-                                : Colors.grey.shade100);
-                      });
-                      saveSelection();
+                      setState(() {});
+                      // saveSelection();
                     },
                     child: SizedBox(
                       height: 60,
@@ -1188,7 +1171,10 @@ class _UserhomeState extends State<Userhome> {
                       child: ElevatedButton(
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
+                          backgroundColor:
+                              selectedVehicleType == "Heavy Wheeler"
+                                  ? Colors.black
+                                  : Colors.transparent,
                           shape: const RoundedRectangleBorder(
                             side: BorderSide.none,
                           ),
@@ -1198,10 +1184,10 @@ class _UserhomeState extends State<Userhome> {
                           " Heavy Wheeler",
                           style: TextStyle(
                             fontSize: 15,
-                            color: selectedVehicleType == "Heavy Wheeler"
-                                ? (darkTheme ? Colors.black : Colors.white)
-                                : (darkTheme ? Colors.white : Colors.black),
                             fontWeight: FontWeight.bold,
+                            color: selectedVehicleType == "Heavy Wheeler"
+                                ? Colors.white
+                                : Colors.black,
                           ),
                         ),
                       ),
@@ -1221,9 +1207,9 @@ class _UserhomeState extends State<Userhome> {
                   //       msg: "Please select a vehicle from above");
                   // }
                   setState(() {
-                    searchNearestOnlineDrivers(selectedVehicleType);
-                    saveSelection();
-                    searchingServiceProviderContainerHeight = 400;
+                    // searchNearestOnlineDrivers();
+                    saveSelection(selectedVehicleType);
+                    // searchingServiceProviderContainerHeight = 400;
                   });
                 },
                 style: ElevatedButton.styleFrom(
