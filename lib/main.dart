@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:onroadvehiclebreakdowwn/Info/app_info.dart';
+import 'package:onroadvehiclebreakdowwn/UserScreens/editprofile.dart';
 
 import 'package:onroadvehiclebreakdowwn/UserScreens/signup.dart';
 import 'package:onroadvehiclebreakdowwn/UserScreens/splashscreen.dart';
@@ -54,7 +55,7 @@ class MyApp extends StatelessWidget {
           // '/login': (context) => const LogIn(),
         },
         home: const SplashScreen(
-          child: SignUp(),
+          child: EditProfile(),
         ),
       ),
     );

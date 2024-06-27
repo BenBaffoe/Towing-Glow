@@ -16,7 +16,7 @@ List serviceProviderList = [];
 
 double countRatings = 0.0;
 
-String userDropOffAddress = "";
+// String userDropOffAddress = "";
 
 // final FirebaseAuth auth = FirebaseAuth.instance;
 
