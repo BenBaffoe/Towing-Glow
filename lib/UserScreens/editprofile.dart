@@ -18,9 +18,103 @@ class EditProfile extends StatefulWidget {
 class _EditProfileState extends State<EditProfile> {
   final nameTextEditingController = TextEditingController();
   final phoneTextEditingController = TextEditingController();
-  final addressTextEditingController = TextEditingController();
+  final emailTextEditingController = TextEditingController();
 
   DatabaseReference userRef = FirebaseDatabase.instance.ref().child("userInfo");
+
+  Future<void> showUserPhoneDialogAlert(BuildContext context, String name) {
+    emailTextEditingController.text = name;
+
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Update"),
+            content: SingleChildScrollView(
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: phoneTextEditingController,
+                  )
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text(
+                  "Cancel",
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  userRef.child(firebaseAuth.currentUser!.uid).update({
+                    "phone": phoneTextEditingController.text.trim(),
+                  }).then((value) {
+                    phoneTextEditingController.clear();
+                    Fluttertoast.showToast(msg: "Update Successful");
+                  });
+                  Navigator.pop(context);
+                },
+                child: const Text(
+                  "Ok",
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+            ],
+          );
+        });
+  }
+
+  Future<void> showUserEmailDialogAlert(BuildContext context, String name) {
+    emailTextEditingController.text = name;
+
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Update"),
+            content: SingleChildScrollView(
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: emailTextEditingController,
+                  )
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text(
+                  "Cancel",
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  userRef.child(firebaseAuth.currentUser!.uid).update({
+                    "email": emailTextEditingController.text.trim(),
+                  }).then((value) {
+                    emailTextEditingController.clear();
+                    Fluttertoast.showToast(msg: "Updated Successful");
+                  });
+                  Navigator.pop(context);
+                },
+                child: const Text(
+                  "Ok",
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+            ],
+          );
+        });
+  }
 
   Future<void> showUserNameDialogAlert(BuildContext context, String name) {
     nameTextEditingController.text = name;
@@ -29,7 +123,7 @@ class _EditProfileState extends State<EditProfile> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text("Update"),
+            title: const Text("Update"),
             content: SingleChildScrollView(
               child: Column(
                 children: [
@@ -183,8 +277,8 @@ class _EditProfileState extends State<EditProfile> {
                 ),
                 IconButton(
                   onPressed: () {
-                    showUserNameDialogAlert(
-                        context, userModelCurrentInfo!.name!);
+                    showUserEmailDialogAlert(
+                        context, userModelCurrentInfo!.email!);
                   },
                   icon: Icon(
                     Icons.edit,
@@ -210,8 +304,8 @@ class _EditProfileState extends State<EditProfile> {
                 ),
                 IconButton(
                   onPressed: () {
-                    showUserNameDialogAlert(
-                        context, userModelCurrentInfo!.name!);
+                    showUserPhoneDialogAlert(
+                        context, userModelCurrentInfo!.phone!);
                   },
                   icon: Icon(
                     Icons.edit,
