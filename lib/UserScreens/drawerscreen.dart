@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:onroadvehiclebreakdowwn/UserScreens/editprofile.dart';
 import 'package:onroadvehiclebreakdowwn/UserScreens/userlogin.dart';
 import 'package:onroadvehiclebreakdowwn/global/global.dart';
 
@@ -174,7 +175,13 @@ class _DrawerScreenState extends State<DrawerScreen> {
                       Padding(
                           padding: const EdgeInsets.fromLTRB(74, 20, 0, 0),
                           child: GestureDetector(
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const EditProfile(),
+                                  ));
+                            },
                             child: const Text(
                               "Edit Profile",
                               style:

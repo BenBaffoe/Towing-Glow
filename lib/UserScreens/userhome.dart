@@ -225,7 +225,7 @@ class _UserhomeState extends State<Userhome> {
     });
 
     onlineNearbyServiceProviderList = GeofireAssistant.activeServiceList;
-    
+
     searchNearestOnlineDrivers(selectedVehicleType);
   }
 
@@ -635,9 +635,8 @@ class _UserhomeState extends State<Userhome> {
     if (activeNearbyIcon == null) {
       ImageConfiguration imageConfiguration = createLocalImageConfiguration(
           context,
-          /* include size of image*/ size: Size(0.2, 0.2));
-      BitmapDescriptor.fromAssetImage(
-              imageConfiguration, 'assets/towin_edited.png')
+          /* include size of image*/ size: const Size(2, 2));
+      BitmapDescriptor.fromAssetImage(imageConfiguration, 'assets/towin.jpeg')
           .then((value) {
         activeNearbyIcon = value;
       });
@@ -657,6 +656,7 @@ class _UserhomeState extends State<Userhome> {
         themeforMap = value;
       });
       checkLocationPermission();
+      createActiveNearbyDriverMarker();
     });
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
@@ -965,8 +965,8 @@ class _UserhomeState extends State<Userhome> {
                                   Provider.of<AppInfo>(context)
                                               .userPickUpLocation !=
                                           null
-                                      ? "${(Provider.of<AppInfo>(context).userPickUpLocation!.locationName!).substring(0, 24)}..."
-                                      : "Getting Address...",
+                                      ? "Getting Address"
+                                      : "${(Provider.of<AppInfo>(context).userPickUpLocation!.locationName!).substring(0, 24)}...",
                                   style: const TextStyle(
                                       color: Colors.grey, fontSize: 14),
                                 ),
