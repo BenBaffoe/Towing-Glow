@@ -5,6 +5,7 @@ import 'package:onroadvehiclebreakdowwn/Assistants/assitant_method.dart';
 import 'package:onroadvehiclebreakdowwn/UserScreens/signup.dart';
 import 'package:onroadvehiclebreakdowwn/UserScreens/userhome.dart';
 import 'package:onroadvehiclebreakdowwn/global/global.dart';
+import 'package:onroadvehiclebreakdowwn/pages/screen.dart';
 
 class SplashScreen extends StatefulWidget {
   final Widget? child;
@@ -22,7 +23,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ? AssistantMethods.readCurrentOnlineUserInfo()
             : null;
         Navigator.push(
-            context, MaterialPageRoute(builder: (c) => const SignUp()));
+            context, MaterialPageRoute(builder: (c) => const Screen()));
       } else {
         Navigator.push(
             context, MaterialPageRoute(builder: (c) => const SignUp()));

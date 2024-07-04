@@ -389,7 +389,7 @@ class _SignUpState extends State<SignUp> {
         if (currentUser != null) {
           Map userMap = {
             "id": currentUser!.uid,
-            "name": nameController.text.trim(),
+            "name": nameController.text.trim(),  
             "email": emailController.text.trim(),
             "phone": phoneController.text.trim(),
           };

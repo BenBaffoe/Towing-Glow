@@ -97,7 +97,7 @@ class _UserhomeState extends State<Userhome> {
   saveSelection(String selectedVehicleType) {
     //save ServiceRequest
     referenceRequest =
-        FirebaseDatabase.instance.ref().child("All Service Requests").push();
+        FirebaseDatabase.instance.ref().child("Service Requests").push();
 
     var originLocation =
         Provider.of<AppInfo>(context, listen: false).userPickUpLocation;
@@ -107,14 +107,14 @@ class _UserhomeState extends State<Userhome> {
 
     Map originLocationMap = {
       //"key:value"
-      "latitude": destinationLocation!.loactionLatitude.toString(),
-      "longitude": destinationLocation.loactionLongitude.toString(),
+      "latitude": destinationLocation!.locationLatitude.toString(),
+      "longitude": destinationLocation.locationLongitude.toString(),
     };
 
     Map destinationLocationMap = {
       //"key:value"
-      "latitude": destinationLocation.loactionLatitude.toString(),
-      "longitude": destinationLocation.loactionLongitude.toString(),
+      "latitude": destinationLocation.locationLatitude.toString(),
+      "longitude": destinationLocation.locationLongitude.toString(),
     };
 
     Map userInformationMap = {
@@ -240,7 +240,7 @@ class _UserhomeState extends State<Userhome> {
   }
 
   Future<void> retrieveServiceProviderInfo(
-      List<ActiveServiceProviders> onlineNearbyServiceProviderList) async {
+      List onlineNearbyServiceProviderList) async {
     serviceProviderList.clear();
     DatabaseReference ref =
         FirebaseDatabase.instance.ref().child("Service Providers");
@@ -259,8 +259,8 @@ class _UserhomeState extends State<Userhome> {
 
 //  onlineNearbyServiceProvidersList  = GeofireAssistant.activeServiceList;
 
-  Future<void> searchNearestOnlineDrivers(String selectedVehicleType) async {
-    if (onlineNearbyServiceProviderList.isEmpty) {
+  searchNearestOnlineDrivers(String selectedVehicleType) async {
+    if (onlineNearbyServiceProviderList == 0) {
       // Cancel the service request if no service provider is available
       referenceRequest!.remove();
 
@@ -268,7 +268,7 @@ class _UserhomeState extends State<Userhome> {
         polyLineSet.clear();
         markersSet.clear();
         circlesSet.clear();
-        pLineCoordinateList.clear();
+        // pLineCoordinateList.clear();
       });
 
       Fluttertoast.showToast(msg: "No service Provider available ");
@@ -280,37 +280,37 @@ class _UserhomeState extends State<Userhome> {
             context, MaterialPageRoute(builder: (c) => const SplashScreen()));
       });
       return;
-    } else {
-      await retrieveServiceProviderInfo(onlineNearbyServiceProviderList);
+    }
+    await retrieveServiceProviderInfo(onlineNearbyServiceProviderList);
 
-      print(
-          "Retrieved Service Provider Info: " + serviceProviderList.toString());
+    print("Retrieved Service Provider Info: " + serviceProviderList.toString());
 
-      for (var serviceProvider in serviceProviderList) {
-        // Send in-app notification to service providers
-        AssistantMethods.sendNotificationToSelectedDriver(
-            serviceProvider["tokens"], context, referenceRequest!.key!);
-      }
+    for (int i = 0; i < serviceProviderList.length; i++) {
+      // Send in-app notification to service providers
+      AssistantMethods.sendNotificationToSelectedDriver(
+          serviceProviderList[i]["token"], context, referenceRequest!.key!);
+    }
 
-      Fluttertoast.showToast(msg: "Notification Sent ");
-      showSearchingServiceProviderContainer();
+    Fluttertoast.showToast(msg: "Notification Sent ");
+    showSearchingServiceProviderContainer();
 
-      FirebaseDatabase.instance
-          .ref()
-          .child("All Ride Request")
-          .child(referenceRequest!.key!)
-          .child("serviceID")
-          .onValue
-          .listen((event) {
-        print("Event : ${event.snapshot.value}");
-        if (event.snapshot.value != null && event.snapshot.value != "waiting") {
+    await FirebaseDatabase.instance
+        .ref()
+        .child("Service Request")
+        .child(referenceRequest!.key!)
+        .child("serviceID")
+        .onValue
+        .listen((event) {
+      print("Event : ${event.snapshot.value}");
+      if (event.snapshot.value != null) {
+        if (event.snapshot.value != "waiting") {
           showAssignedServiceProviderInfo();
         }
-      });
-    }
+      }
+    });
   }
 
-  String username = userModelCurrentInfo?.name ?? '';
+  String userName = userModelCurrentInfo?.name ?? '';
   String userEmail = userModelCurrentInfo?.email ?? '';
 
   bool requestPositionInfo = true;
@@ -349,8 +349,8 @@ class _UserhomeState extends State<Userhome> {
           Provider.of<AppInfo>(context, listen: false).userDropOffLocation;
 
       LatLng userDestinationPosition = LatLng(
-          destinationFromUser!.loactionLatitude!,
-          destinationFromUser.loactionLongitude!);
+          destinationFromUser!.locationLatitude!,
+          destinationFromUser.locationLongitude!);
 
       var directionsDetailsInfo =
           await AssistantMethods.obtainOriginToDestinationDirectionsDetails(
@@ -385,10 +385,10 @@ class _UserhomeState extends State<Userhome> {
         Provider.of<AppInfo>(context, listen: false).userDropOffLocation;
 
     var originLatLng = LatLng(
-        originPosition!.loactionLatitude!, originPosition.loactionLongitude!);
+        originPosition!.locationLatitude!, originPosition.locationLongitude!);
 
-    var destinationLatLng = LatLng(destinationPosition!.loactionLatitude!,
-        destinationPosition.loactionLongitude!);
+    var destinationLatLng = LatLng(destinationPosition!.locationLatitude!,
+        destinationPosition.locationLongitude!);
 
     showDialog(
       context: context,
@@ -616,15 +616,19 @@ class _UserhomeState extends State<Userhome> {
   getAddressFromLatlng() async {
     try {
       GeoData data = await Geocoder2.getDataFromCoordinates(
-          latitude: pickLocation!.latitude,
-          longitude: pickLocation!.longitude,
-          googleMapApiKey: googlesMapKey);
+        latitude: pickLocation!.latitude,
+        longitude: pickLocation!.longitude,
+        googleMapApiKey: googlesMapKey,
+      );
       setState(() {
         Directions userPickUpAddress = Directions();
-        userPickUpAddress.loactionLatitude = pickLocation!.latitude;
-        userPickUpAddress.loactionLongitude = pickLocation!.longitude;
+        userPickUpAddress.locationLatitude = pickLocation!.latitude;
+        userPickUpAddress.locationLongitude = pickLocation!.longitude;
         userPickUpAddress.locationName = data.address;
         // _address = data.address;
+
+        Provider.of<AppInfo>(context, listen: false)
+            .updatePickUpLocationAddress(userPickUpAddress);
       });
     } catch (e) {
       print(e);
@@ -921,7 +925,6 @@ class _UserhomeState extends State<Userhome> {
 
     //final FocusNode towingPointFocusNode = FocusNode();
     // final FocusNode pickingPointFocusNode = FocusNode();
-
     return showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -965,8 +968,12 @@ class _UserhomeState extends State<Userhome> {
                                   Provider.of<AppInfo>(context)
                                               .userPickUpLocation !=
                                           null
-                                      ? "Getting Address"
-                                      : "${(Provider.of<AppInfo>(context).userPickUpLocation!.locationName!).substring(0, 24)}...",
+                                      ? (Provider.of<AppInfo>(context)
+                                                  .userPickUpLocation!
+                                                  .locationName!)
+                                              .substring(0, 14) +
+                                          "..."
+                                      : "Getting Address...",
                                   style: const TextStyle(
                                       color: Colors.grey, fontSize: 14),
                                 ),
@@ -1204,14 +1211,15 @@ class _UserhomeState extends State<Userhome> {
               padding: const EdgeInsets.all(12.0),
               child: ElevatedButton(
                 onPressed: () {
+                  searchNearestOnlineDrivers(selectedVehicleType);
                   //   Fluttertoast.showToast(
                   //       msg: "Please select a vehicle from above");
                   // }
-                  setState(() {
-                    // searchNearestOnlineDrivers();
-                    saveSelection(selectedVehicleType);
-                    // searchingServiceProviderContainerHeight = 400;
-                  });
+                  // setState(() {
+                  //   // searchNearestOnlineDrivers();
+
+                  //   // searchingServiceProviderContainerHeight = 400;
+                  // });
                 },
                 style: ElevatedButton.styleFrom(
                     elevation: 2,

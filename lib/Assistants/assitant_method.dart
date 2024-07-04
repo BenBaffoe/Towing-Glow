@@ -13,7 +13,7 @@ import 'package:onroadvehiclebreakdowwn/models/user_modals.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:googleapis_auth/auth_io.dart' as auth;
-import 'package:googleapis/servicecontrol/v1.dart' as servicecontrol;
+// import 'package:googleapis/servicecontrol/v1.dart' as servicecontrol;
 
 class AssistantMethods {
   static void readCurrentOnlineUserInfo() async {
@@ -33,7 +33,7 @@ class AssistantMethods {
   static Future<String> searchAddressForGeographicCoOrdinates(
       Position position, context) async {
     String apiUrl =
-        "https:/maps.googleapis.com/maps/api/geocode/json?Latlng=${position.longitude},  ${position.longitude}&key=$googlesMapKey";
+        "https:/maps.googleapis.com/maps/api/geocode/json?Latlng=${position.latitude},${position.longitude}&key=$googlesMapKey";
 
     String humanReadableAddress = "";
 
@@ -43,8 +43,8 @@ class AssistantMethods {
       humanReadableAddress = requestResponse["results"][0]["formatted_address"];
 
       Directions userPickUpAddress = Directions();
-      userPickUpAddress.loactionLatitude = position.latitude;
-      userPickUpAddress.loactionLongitude = position.longitude;
+      userPickUpAddress.locationLatitude = position.latitude;
+      userPickUpAddress.locationLongitude = position.longitude;
       userPickUpAddress.locationName = humanReadableAddress;
 
       Provider.of<AppInfo>(context, listen: false)
@@ -152,7 +152,7 @@ class AssistantMethods {
         //the device we want to send to
         'token': deviceToken,
         'notification': {
-          'title': "Service Request From ${userName}",
+          'title': "Service Request From ${username}}",
           'body': "User Location :  $userLocationAddreass ",
         },
         'data': {

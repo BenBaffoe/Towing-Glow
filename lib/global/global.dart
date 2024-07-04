@@ -22,7 +22,7 @@ double countRatings = 0.0;
 
 String titleStarsRating = "";
 
-String userName = "";
+// String userName = "";
 
 final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 

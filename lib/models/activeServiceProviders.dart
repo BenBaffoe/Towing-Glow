@@ -4,8 +4,8 @@ class ActiveServiceProviders {
   double? locationLongitude;
 
   ActiveServiceProviders({
+    this.serviceId,
     this.locationLatitude,
     this.locationLongitude,
-    this.serviceId,
   });
 }
