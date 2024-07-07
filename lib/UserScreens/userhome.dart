@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -10,6 +12,7 @@ import 'package:geocoder2/geocoder2.dart';
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:googleapis/biglake/v1.dart';
 // import 'package:googleapis/dataproc/v1.dart';
 import 'package:onroadvehiclebreakdowwn/Assistants/assitant_method.dart';
 import 'package:onroadvehiclebreakdowwn/Assistants/geofire_assistant.dart';
@@ -72,7 +75,8 @@ class _UserhomeState extends State<Userhome> {
 
   LocationPermission? _locationPermission;
 
-  StreamSubscription<DatabaseEvent>? tripRidesRequestInfoStreamSubscription;
+  StreamSubscription<QuerySnapshot<Object?>>?
+      tripRidesRequestInfoStreamSubscription;
 
   double bottomPaddingOfMap = 0;
 
@@ -84,7 +88,7 @@ class _UserhomeState extends State<Userhome> {
 
   Set<Circle> circlesSet = {};
 
-  DatabaseReference? referenceRequest;
+  CollectionReference? referenceRequest;
 
   List<ActiveServiceProviders> onlineNearbyServiceProviderList = [];
 
@@ -94,10 +98,11 @@ class _UserhomeState extends State<Userhome> {
     });
   }
 
-  saveSelection(String selectedVehicleType) {
+  saveSelection(String selectedVehicleType) async {
     //save ServiceRequest
+
     referenceRequest =
-        FirebaseDatabase.instance.ref().child("Service Requests").push();
+        FirebaseFirestore.instance.collection("Service Requests");
 
     var originLocation =
         Provider.of<AppInfo>(context, listen: false).userPickUpLocation;
@@ -128,13 +133,19 @@ class _UserhomeState extends State<Userhome> {
       "serviceID": "waiting",
     };
 
-    referenceRequest!.set(userInformationMap);
+    referenceRequest!.add(userInformationMap);
 
     tripRidesRequestInfoStreamSubscription =
-        referenceRequest!.onValue.listen((eventSnap) async {
-      if (eventSnap.snapshot.value == null) {
+        referenceRequest!.snapshots().listen((eventSnap) async {
+      if (eventSnap.docs.isEmpty) {
         return;
       }
+
+      //    for (var doc in eventSnap.docs) {
+      //    if (doc.data() == null) {
+      //      return;
+      // }
+
       // if ((eventSnap.snapshot.value as Map)["car_details"] != null) {
       //   setState(() {
       //     driverCarDetails =
@@ -142,36 +153,32 @@ class _UserhomeState extends State<Userhome> {
       //   });
       // }
 
-      if ((eventSnap.snapshot.value as Map)["name"] != null) {
+      if ((eventSnap.docs as Map)["userName"] != null) {
         setState(() {
-          driverCarDetails =
-              (eventSnap.snapshot.value as Map)["name"].toString();
+          driverCarDetails = (eventSnap.docs as Map)["userName"].toString();
         });
       }
 
-      if ((eventSnap.snapshot.value as Map)["phone"] != null) {
+      if ((eventSnap.docs as Map)["userPhone"] != null) {
         setState(() {
-          driverCarDetails =
-              (eventSnap.snapshot.value as Map)["phone"].toString();
+          driverCarDetails = (eventSnap.docs as Map)["userPhone"].toString();
         });
       }
 
-      if ((eventSnap.snapshot.value as Map)["status"] != null) {
+      if ((eventSnap.docs as Map)["status"] != null) {
         setState(() {
-          userRequestStatus =
-              (eventSnap.snapshot.value as Map)["status"].toString();
+          userRequestStatus = (eventSnap.docs as Map)["status"].toString();
         });
       }
 
-      if ((eventSnap.snapshot.value as Map)["ServiceProviderLocation"] !=
-          null) {
-        double driverCurrentPositionLat = double.parse((eventSnap.snapshot.value
-                as Map)["ServiceProviderLocation"]["latitude"]
-            .toString());
+      if ((eventSnap.docs as Map)["ServiceProviderLocation"] != null) {
+        double driverCurrentPositionLat = double.parse(
+            (eventSnap.docs as Map)["ServiceProviderLocation"]["latitude"]
+                .toString());
 
-        double driverCurrentPositionLng = double.parse((eventSnap.snapshot.value
-                as Map)["ServiceProviderLocation"]["longitude"]
-            .toString());
+        double driverCurrentPositionLng = double.parse(
+            (eventSnap.docs as Map)["ServiceProviderLocation"]["longitude"]
+                .toString());
 
         LatLng driverCurrentPositionLatLng =
             LatLng(driverCurrentPositionLat, driverCurrentPositionLng);
@@ -193,9 +200,9 @@ class _UserhomeState extends State<Userhome> {
         }
 
         if (userRequestStatus == " ended") {
-          if ((eventSnap.snapshot.value as Map)["fareAmount"] != null) {
-            double fareAmount = double.parse(
-                (eventSnap.snapshot.value as Map)["fareAmount"].toString());
+          if ((eventSnap.docs as Map)["fareAmount"] != null) {
+            double fareAmount =
+                double.parse((eventSnap.docs as Map)["fareAmount"].toString());
 
             // var response = await showDialog(
             //     context: context,
@@ -207,15 +214,15 @@ class _UserhomeState extends State<Userhome> {
             var response = "";
 
             if (response == "Cash Paid") {
-              if ((eventSnap.snapshot.value as Map)["serviceID"] != null) {
+              if ((eventSnap.docs as Map)["serviceID"] != null) {
                 String assignedServiceID =
-                    (eventSnap.snapshot.value as Map)["serviceID"].toString();
+                    (eventSnap.docs as Map)["serviceID"].toString();
 
                 // Navgator.push(context, MaterialPageRoute(builder: (c) => {
                 //   RateDriverScreen();
                 // }));
 
-                referenceRequest!.onDisconnect();
+                // referenceRequest!.onDisconnect();
                 tripRidesRequestInfoStreamSubscription!.cancel();
               }
             }
@@ -262,7 +269,7 @@ class _UserhomeState extends State<Userhome> {
   searchNearestOnlineDrivers(String selectedVehicleType) async {
     if (onlineNearbyServiceProviderList == 0) {
       // Cancel the service request if no service provider is available
-      referenceRequest!.remove();
+      // referenceRequest!.remove();
 
       setState(() {
         polyLineSet.clear();
@@ -275,7 +282,7 @@ class _UserhomeState extends State<Userhome> {
       Fluttertoast.showToast(msg: "Search again. \n Restarting App");
 
       Future.delayed(const Duration(milliseconds: 4000), () {
-        referenceRequest!.remove();
+        referenceRequest!.doc('Service Requests').delete();
         Navigator.push(
             context, MaterialPageRoute(builder: (c) => const SplashScreen()));
       });
@@ -288,7 +295,7 @@ class _UserhomeState extends State<Userhome> {
     for (int i = 0; i < serviceProviderList.length; i++) {
       // Send in-app notification to service providers
       AssistantMethods.sendNotificationToSelectedDriver(
-          serviceProviderList[i]["token"], context, referenceRequest!.key!);
+          serviceProviderList[i]["token"], context, referenceRequest!.id);
     }
 
     Fluttertoast.showToast(msg: "Notification Sent ");
@@ -297,7 +304,7 @@ class _UserhomeState extends State<Userhome> {
     await FirebaseDatabase.instance
         .ref()
         .child("Service Request")
-        .child(referenceRequest!.key!)
+        .child(referenceRequest!.id)
         .child("serviceID")
         .onValue
         .listen((event) {
@@ -1387,7 +1394,7 @@ class _UserhomeState extends State<Userhome> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      referenceRequest!.remove();
+                      // referenceRequest!.remove();
                       setState(() {
                         searchLocationContainerHeight = 0;
                         suggestedRidesContainerHeight = 0;

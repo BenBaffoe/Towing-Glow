@@ -134,51 +134,83 @@ class AssistantMethods {
     return credentials.accessToken.data;
   }
 
-  static sendNotificationToSelectedDriver(
-      String deviceToken, BuildContext context, String serviceID) async {
+  static sendNotificationToSelectedDriver(String deviceToken,
+      BuildContext context, String userServiceRequestId) async {
     final String serverAccessToken = await getAccessToken();
-    String endpointFirebaseClouMessaging =
-        'https://fcm.googleapis.com/v1/projects/roadtoll-1/messages:send';
+    // String endpointFirebaseClouMessaging =
+    //     'https://fcm.googleapis.com/v1/projects/roadtoll-1/messages:send';
 
-    // data we want to send
-
-    String userLocationAddreass = Provider.of<AppInfo>(context, listen: false)
+    String userLocationAddress = Provider.of<AppInfo>(context, listen: false)
         .userPickUpLocation!
         .locationName!
         .toString();
 
-    final Map<String, dynamic> message = {
-      'message': {
-        //the device we want to send to
-        'token': deviceToken,
-        'notification': {
-          'title': "Service Request From ${username}}",
-          'body': "User Location :  $userLocationAddreass ",
-        },
-        'data': {
-          'serviceID': serviceID,
-          'click_action': "FLUTTER_NOTICFICATION_CLICK",
-          'status': 'done',
-        }
-      }
+    Map dataMap = {
+      "id": "1",
+      "serviceID": userServiceRequestId,
+      "click_action": "FLUTTER_NOTICFICATION_CLICK",
+      "status": 'done',
     };
 
-    //finally sending the request
+    Map<String, String> headerNotification = {
+      'Content-Type': 'application/json',
+      'Authorization': serverAccessToken,
+    };
 
-    final http.Response response = await http.post(
-      Uri.parse(endpointFirebaseClouMessaging),
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $serverAccessToken'
-      },
-      body: jsonEncode(message),
+    Map bodyNotification = {
+      "body": "Userlocation: \n$userLocationAddress",
+      "title": "New Service Request",
+    };
+
+    Map officalNotificationFormat = {
+      "notification": bodyNotification,
+      "data": dataMap,
+      "priority": "high",
+      "to": deviceToken,
+    };
+
+    var responseNotification = http.post(
+      Uri.parse(
+          "https://fcm.googleapis.com/v1/projects/roadtoll-1/messages:send"),
+      headers: headerNotification,
+      body: jsonEncode(officalNotificationFormat),
     );
 
-    if (response.statusCode == 200) {
-      print("Notification Sent");
-    } else {
-      print("Failed to send notification :${response.statusCode}");
-    }
+    // data we want to send
+
+    // final Map<String, dynamic> message = {
+    //   'message': {
+    //     //the device we want to send to
+    //     "token": deviceToken,
+    //     'notification': {
+    //       'title': "Service Request From ${username}}",
+    //       'body': "User Location :  $userLocationAddreass ",
+    //     },
+    //     'data': {
+    //       "id": "1",
+    //       'serviceID': userServiceRequest,
+    //       'click_action': "FLUTTER_NOTICFICATION_CLICK",
+    //       'status': 'done',
+    //     }
+    //   }
+    // };
+
+    // //finally sending the request
+
+    // final http.Response response = await http.post(
+    //   Uri.parse(endpointFirebaseClouMessaging),
+    //   headers: <String, String>{
+    //     'Content-Type': 'application/json',
+    //     'Authorization': 'Bearer $serverAccessToken'
+    //   },
+    //   body: jsonEncode(message),
+    // );
+
+    // if (response.statusCode == 200) {
+    //   print("Notification Sent");
+    // } else {
+    //   print("Failed to send notification :${response.statusCode}");
+    // }
   }
 
   //static double calculateServiceAmount()

@@ -347,9 +347,7 @@ class _SignUpState extends State<SignUp> {
   }
 
 //   void _signUp() async {
-//     setState(() {
-//       isLoading = true;
-//     });
+//
 
 //     String email = emailController.text;
 //     String password = passwordController.text;
@@ -368,45 +366,71 @@ class _SignUpState extends State<SignUp> {
 //         } else {
 //           showToast(message: "Some error occurred");
 //         }
-//       } catch (e) {
-//         showToast(message: "User already exists");
-//       }
-//       setState(() {
-//         isLoading = false;
-//       });
-//     }
+//
 //   }
 // }
 
-  void _submit() async {
-    if (formKey.currentState!.validate()) {
-      await firebaseAuth
-          .createUserWithEmailAndPassword(
-              email: emailController.text, password: passwordController.text)
-          .then((auth) async {
-        currentUser = auth.user;
+  // void _submit() async {
+  //
+  //         Map userMap = {
+  //
+  //         };
 
-        if (currentUser != null) {
-          Map userMap = {
-            "id": currentUser!.uid,
-            "name": nameController.text.trim(),  
-            "email": emailController.text.trim(),
-            "phone": phoneController.text.trim(),
-          };
-          DatabaseReference userRef =
-              FirebaseDatabase.instance.ref().child("userInfo");
-          userRef.child(currentUser!.uid).set(userMap);
-        }
-        await Fluttertoast.showToast(msg: "User created");
+  //         FirebaseFirestore userRef =
+  //             FirebaseFirestore.instance.collection('userInfo').doc("userInfo").snapshots(),
+  //         userRef.child(currentUser!.uid).set(userMap);
+  //       }
+  //       await Fluttertoast.showToast(msg: "User created");
 
-        Navigator.push(
-            context, MaterialPageRoute(builder: (c) => const Userhome()));
-      }).catchError((err) {
-        Fluttertoast.showToast(msg: "Error: " + err.message);
+  //       Navigator.push(
+  //           context, MaterialPageRoute(builder: (c) => const Userhome()));
+  //     }).catchError((err) {
+  //
+  //     });
+  //
+  // }
+
+  Future<void> _submit() async {
+    try {
+      setState(() {
+        isLoading = true;
       });
-    } else {
-      Fluttertoast.showToast(
-          msg: "Some inputs in the text field are not valid");
+      if (formKey.currentState!.validate()) {
+        await firebaseAuth
+            .createUserWithEmailAndPassword(
+                email: emailController.text, password: passwordController.text)
+            .then((auth) async {
+          currentUser = auth.user;
+
+          if (currentUser != null) {
+            CollectionReference userInfo =
+                FirebaseFirestore.instance.collection('userInfo');
+
+            return userInfo
+                .add({
+                  "id": currentUser!.uid,
+                  "name": nameController.text.trim(),
+                  "email": emailController.text.trim(),
+                  "phone": phoneController.text.trim(),
+                })
+                .then((value) => print("New UserInfo Added"))
+                .catchError((error) => print(error.message));
+          }
+          await Fluttertoast.showToast(msg: "User Created");
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const Userhome()));
+        }).catchError((err) {
+          Fluttertoast.showToast(msg: "Error: " + err.message);
+        });
+      } else {
+        Fluttertoast.showToast(
+            msg: "Some inputs in the text field are not valid");
+      }
+    } catch (e) {
+      showToast(message: "User already exists");
     }
+    setState(() {
+      isLoading = false;
+    });
   }
 }
