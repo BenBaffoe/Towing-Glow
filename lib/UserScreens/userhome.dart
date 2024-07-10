@@ -301,16 +301,14 @@ class _UserhomeState extends State<Userhome> {
     Fluttertoast.showToast(msg: "Notification Sent ");
     showSearchingServiceProviderContainer();
 
-    await FirebaseDatabase.instance
-        .ref()
-        .child("Service Request")
-        .child(referenceRequest!.id)
-        .child("serviceID")
-        .onValue
-        .listen((event) {
-      print("Event : ${event.snapshot.value}");
-      if (event.snapshot.value != null) {
-        if (event.snapshot.value != "waiting") {
+    FirebaseFirestore.instance
+        .collection("Service Request")
+        .doc(referenceRequest!.id!)
+        .snapshots()
+        .listen((snapshot) {
+      print("Snapshot : ${snapshot.get("serviceID")}");
+      if (snapshot.get("serviceID") != null) {
+        if (snapshot.get("serviceID") != "waiting") {
           showAssignedServiceProviderInfo();
         }
       }
