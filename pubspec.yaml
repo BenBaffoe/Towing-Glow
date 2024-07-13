@@ -59,6 +59,7 @@ dependencies:
   googleapis: ^13.1.0
   googleapis_auth: ^1.4.1
   firebase_messaging: ^14.9.4
+  flutter_local_notifications: ^17.2.1+1
 dev_dependencies:
   flutter_test:
     sdk: flutter

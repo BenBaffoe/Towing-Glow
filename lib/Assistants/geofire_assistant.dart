@@ -5,17 +5,17 @@ class GeofireAssistant {
 
   // static get activeServiceProviderList => null;
 
-  static void deletedOfflineDriverFromList(String serviceId) {
-    int indexNumber = activeServiceList
-        .indexWhere((element) => element.serviceId == serviceId);
+  static void deletedOfflineDriverFromList(String id) {
+    int indexNumber =
+        activeServiceList.indexWhere((element) => element.id == id);
 
     activeServiceList.remove(indexNumber);
   }
 
   static void updateActiveDriverLocation(
       ActiveServiceProviders serviceProviderOnMove) {
-    int indexNumber = activeServiceList.indexWhere(
-        (element) => element.serviceId == serviceProviderOnMove.serviceId);
+    int indexNumber = activeServiceList
+        .indexWhere((element) => element.id == serviceProviderOnMove.id);
 
     activeServiceList[indexNumber].locationLatitude =
         serviceProviderOnMove.locationLatitude;

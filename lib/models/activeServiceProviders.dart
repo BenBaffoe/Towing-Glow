@@ -1,10 +1,10 @@
 class ActiveServiceProviders {
-  String? serviceId;
+  String? id;
   double? locationLatitude;
   double? locationLongitude;
 
   ActiveServiceProviders({
-    this.serviceId,
+    this.id,
     this.locationLatitude,
     this.locationLongitude,
   });

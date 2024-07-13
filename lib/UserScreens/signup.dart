@@ -390,11 +390,12 @@ class _SignUpState extends State<SignUp> {
   //
   // }
 
-  Future<void> _submit() async {
+  _submit() async {
     try {
       setState(() {
         isLoading = true;
       });
+
       if (formKey.currentState!.validate()) {
         await firebaseAuth
             .createUserWithEmailAndPassword(
@@ -403,22 +404,21 @@ class _SignUpState extends State<SignUp> {
           currentUser = auth.user;
 
           if (currentUser != null) {
-            CollectionReference userInfo =
-                FirebaseFirestore.instance.collection('userInfo');
+            Map userMap = {
+              "id": currentUser!.uid,
+              "name": nameController.text.trim(),
+              "email": emailController.text.trim(),
+              "phone": phoneController.text.trim(),
+            };
 
-            return userInfo
-                .add({
-                  "id": currentUser!.uid,
-                  "name": nameController.text.trim(),
-                  "email": emailController.text.trim(),
-                  "phone": phoneController.text.trim(),
-                })
-                .then((value) => print("New UserInfo Added"))
-                .catchError((error) => print(error.message));
+            DatabaseReference userRef =
+                FirebaseDatabase.instance.ref().child("userInfo");
+            userRef.child(currentUser!.uid).set(userMap);
           }
-          await Fluttertoast.showToast(msg: "User Created");
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const Userhome()));
+          await Fluttertoast.showToast(msg: "User created");
+
+          Navigator.push(
+              context, MaterialPageRoute(builder: (c) => const Userhome()));
         }).catchError((err) {
           Fluttertoast.showToast(msg: "Error: " + err.message);
         });

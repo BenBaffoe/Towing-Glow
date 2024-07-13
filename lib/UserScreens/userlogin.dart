@@ -296,12 +296,12 @@ class _UserLoginState extends State<UserLogin> {
           .signInWithEmailAndPassword(
               email: _emailController.text, password: _passwordController.text)
           .then((auth) async {
-        CollectionReference userRef =
-            FirebaseFirestore.instance.collection('userInfo');
+        DatabaseReference userRef =
+            FirebaseDatabase.instance.ref().child("userInfo");
 
-        userRef.doc(firebaseAuth.currentUser!.uid).get().then((value) async {
-          final snap = value.data();
-          if (value.exists && snap != null) {
+        userRef.child(firebaseAuth.currentUser!.uid).once().then((value) async {
+          final snap = value.snapshot;
+          if (snap.value != null) {
             currentUser = auth.user;
             await Fluttertoast.showToast(msg: "Login Successful");
             Navigator.push(

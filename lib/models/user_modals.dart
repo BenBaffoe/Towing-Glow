@@ -7,16 +7,16 @@ class UserModel {
   String? phone;
 
   UserModel({
-    this.id,
     this.name,
     this.email,
     this.phone,
+    this.id,
   });
 
   UserModel.fromSnapshot(DataSnapshot snap) {
-    id = snap.key;
-    name = (snap.value as dynamic)["name"];
-    email = (snap.value as dynamic)["email"];
     phone = (snap.value as dynamic)["phone"];
+    id = snap.key;
+    email = (snap.value as dynamic)["email"];
+    name = (snap.value as dynamic)["name"];
   }
 }
