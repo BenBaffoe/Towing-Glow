@@ -52,7 +52,7 @@ class _UserhomeState extends State<Userhome> {
 
   bool darkTheme = true;
 
-  String selectedVehicleType = "";
+  String selectedVehicleType = "c";
 
   double searchLocationContainerHeight = 220;
   double waitingLocationContainerHeight = 0;
@@ -358,40 +358,41 @@ class _UserhomeState extends State<Userhome> {
   //   }
   // }
 
-  String? serviceType;
-  String? userEmail;
-  String? userPhone;
-  String? userId;
-  String? service;
-  String? userName;
+  String serviceType = 'c';
+  String userEmail = '';
+  String userPhone = '';
+  String userId = '';
+  String service = '';
+  String userName = '';
 
-  selectService(String serviceType, String selectedVehicleType) async {
+  Future<void> selectService(
+      String serviceType, String selectedVehicleType) async {
     referenceRequest =
         FirebaseDatabase.instance.ref().child("Service Requests").push();
 
-    DatabaseReference userRef =
-        FirebaseDatabase.instance.ref().child("userInfo");
+    // DatabaseReference userRef =
+    //     FirebaseDatabase.instance.ref().child("userInfo");
 
-    userRef.child(firebaseAuth.currentUser!.uid).onValue.listen((event) {
-      Map<String, dynamic> userData =
-          Map<String, dynamic>.from(event.snapshot.value as Map);
-      setState(() {
-        userName = userData['name'] ?? '';
-        userEmail = userData['email'] ?? '';
-        userPhone = userData['phone'] ?? '';
-        userId = userData['id'] ?? '';
-        service = userData['service'] ?? '';
-      });
-    });
+    // userRef.child(firebaseAuth.currentUser!.uid).onValue.listen((event) {
+    //   Map<String, dynamic> userData =
+    //       Map<String, dynamic>.from(event.snapshot.value as Map);
+    //   setState(() {
+    //     userName = userData['name'] ?? '';
+    //     userEmail = userData['email'] ?? '';
+    //     userPhone = userData['phone'] ?? '';
+    //     userId = userData['id'] ?? '';
+    //     service = userData['service'] ?? '';
+    //   });
+    // });
 
     var originLocation =
         Provider.of<AppInfo>(context, listen: false).userPickUpLocation;
 
     Map serviceProviderInfo = {
-      "name": userName,
-      "phone": userPhone,
-      "email": userEmail,
-      "service": service,
+      "name": '',
+      "phone": '',
+      "email": '',
+      "service": '',
     };
 
     Map originLocationMap = {
@@ -412,7 +413,7 @@ class _UserhomeState extends State<Userhome> {
       "serviceProvider": serviceProviderInfo,
     };
 
-    referenceRequest!.set(userInformationMap);
+    await referenceRequest!.set(userInformationMap);
   }
 
   void findService() {}
@@ -827,9 +828,9 @@ class _UserhomeState extends State<Userhome> {
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
-                          serviceType = "Vulcanizer";
+                          serviceType = " Vulcanizer ";
                         });
-                        setState(() => _vehicleServiceBottomSheet(context));
+                        _vehicleServiceBottomSheet(context);
                       },
                       child: SizedBox(
                         height: 75,
@@ -849,7 +850,7 @@ class _UserhomeState extends State<Userhome> {
                         setState(() {
                           serviceType = "Fuel/Battery Emergency";
                         });
-                        setState(() => _vehicleServiceBottomSheet(context));
+                        _vehicleServiceBottomSheet(context);
                       },
                       child: SizedBox(
                         height: 75,
@@ -873,7 +874,7 @@ class _UserhomeState extends State<Userhome> {
                         setState(() {
                           serviceType = "Vulcanizer";
                         });
-                        setState(() => _vehicleServiceBottomSheet(context));
+                        _vehicleServiceBottomSheet(context);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.transparent,
@@ -903,7 +904,7 @@ class _UserhomeState extends State<Userhome> {
                           setState(() {
                             serviceType = "Fuel/Battery Emergency";
                           });
-                          setState(() => _vehicleServiceBottomSheet(context));
+                          _vehicleServiceBottomSheet(context);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.transparent,
@@ -942,7 +943,7 @@ class _UserhomeState extends State<Userhome> {
                         setState(() {
                           serviceType = "Towing Emergency";
                         });
-                        setState(() => _vehicleServiceBottomSheet(context));
+                        _vehicleServiceBottomSheet(context);
                       },
                       child: SizedBox(
                         height: 75,
@@ -965,7 +966,7 @@ class _UserhomeState extends State<Userhome> {
                         setState(() {
                           serviceType = "Fuel/Battery Emergency";
                         });
-                        setState(() => _vehicleServiceBottomSheet(context));
+                        _vehicleServiceBottomSheet(context);
                       },
                       child: SizedBox(
                         height: 75,
@@ -989,7 +990,7 @@ class _UserhomeState extends State<Userhome> {
                         setState(() {
                           serviceType = "Towing Emergency";
                         });
-                        setState(() => _vehicleServiceBottomSheet(context));
+                        _vehicleServiceBottomSheet(context);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.transparent,
@@ -1011,14 +1012,17 @@ class _UserhomeState extends State<Userhome> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        setState(() => _vehicleServiceBottomSheet(context));
+                        // setState(() {
+                        //   serviceType = "Fuel/Battery Emergency";
+                        //   _vehicleServiceBottomSheet(context);
+                        // });
                       },
                       child: ElevatedButton(
                         onPressed: () {
                           setState(() {
                             serviceType = "Fuel/Battery Emergency";
                           });
-                          setState(() => _vehicleServiceBottomSheet(context));
+                          _vehicleServiceBottomSheet(context);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.transparent,
@@ -1343,6 +1347,12 @@ class _UserhomeState extends State<Userhome> {
               padding: const EdgeInsets.all(12.0),
               child: ElevatedButton(
                 onPressed: () {
+                  setState(() {
+                    print("hmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
+                    print(selectService(serviceType, selectedVehicleType));
+                    selectService(serviceType, selectedVehicleType);
+                  });
+
                   // searchNearestOnlineDrivers(selectedVehicleType);
                   // saveSelection(selectedVehicleType);
                   //   Fluttertoast.showToast(
