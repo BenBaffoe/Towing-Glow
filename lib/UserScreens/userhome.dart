@@ -24,6 +24,7 @@ import 'package:onroadvehiclebreakdowwn/UserScreens/drawerscreen.dart';
 import 'package:location/location.dart' as loc;
 import 'package:connectivity/connectivity.dart';
 import 'package:onroadvehiclebreakdowwn/UserScreens/localNotification.dart';
+import 'package:onroadvehiclebreakdowwn/UserScreens/requestscreen.dart';
 import 'package:onroadvehiclebreakdowwn/UserScreens/splashscreen.dart';
 import 'package:onroadvehiclebreakdowwn/global/global.dart';
 import 'package:onroadvehiclebreakdowwn/main.dart';
@@ -476,6 +477,29 @@ class _UserhomeState extends State<Userhome> {
 
   BitmapDescriptor? activeNearbyIcon;
 
+  getNotification() {
+    print("Listening for notifications");
+    LocalNotifications.onClickedNotification.stream.listen((event) {
+      showNotification(event);
+    });
+  }
+
+  showNotification(payload) {
+    // String ee = payload;
+    return showModalBottomSheet(
+        context: context,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(30),
+          ),
+        ),
+        builder: (context) => SizedBox(
+              height: 400,
+              width: 300,
+              child: Text(payload),
+            ));
+  }
+
   Future<void> retrieveServiceRequest(String serviceType) async {
     DatabaseReference userRef =
         FirebaseDatabase.instance.ref().child("serviceProvider");
@@ -502,9 +526,9 @@ class _UserhomeState extends State<Userhome> {
 
             String phone = serviceProviderInfo['phone'] ?? 'Unknown';
 
-            LocalNotifications.showNotificaion(
-                title: 'Service Request',
-                body: 'Service request from $name',
+            LocalNotifications.showSimpleNotification(
+                title: 'Service Request Accepted',
+                body: 'Service Provider $name of his way',
                 payload: "$name requesting $service\n Phone: $phone");
           }
         });
@@ -810,6 +834,7 @@ class _UserhomeState extends State<Userhome> {
       createActiveNearbyDriverMarker();
       LocalNotifications.init();
       startPeriodicServiceRequestRetrieval();
+      getNotification();
     });
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
@@ -1482,6 +1507,7 @@ class _UserhomeState extends State<Userhome> {
                     print(serviceType);
                     print(selectedVehicleType);
                     print(selectService(serviceType, selectedVehicleType));
+                    _searchServiceBottomSheet(context);
                     selectService(serviceType, selectedVehicleType);
                   });
 
