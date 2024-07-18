@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:onroadvehiclebreakdowwn/Info/app_info.dart';
 import 'package:onroadvehiclebreakdowwn/UserScreens/editprofile.dart';
+import 'package:onroadvehiclebreakdowwn/UserScreens/localNotification.dart';
 import 'package:onroadvehiclebreakdowwn/UserScreens/splashscreen.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +14,8 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await LocalNotifications.init();
 
   await Firebase.initializeApp();
 

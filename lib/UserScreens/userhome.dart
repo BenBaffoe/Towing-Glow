@@ -23,6 +23,7 @@ import 'package:onroadvehiclebreakdowwn/UserScreens/drawerscreen.dart';
 /*import 'package:onroadvehiclebreakdowwn/global/global.dart';*/
 import 'package:location/location.dart' as loc;
 import 'package:connectivity/connectivity.dart';
+import 'package:onroadvehiclebreakdowwn/UserScreens/localNotification.dart';
 import 'package:onroadvehiclebreakdowwn/UserScreens/splashscreen.dart';
 import 'package:onroadvehiclebreakdowwn/global/global.dart';
 import 'package:onroadvehiclebreakdowwn/main.dart';
@@ -52,7 +53,7 @@ class _UserhomeState extends State<Userhome> {
 
   bool darkTheme = true;
 
-  String selectedVehicleType = "c";
+  String selectedVehicleType = "";
 
   double searchLocationContainerHeight = 220;
   double waitingLocationContainerHeight = 0;
@@ -96,19 +97,9 @@ class _UserhomeState extends State<Userhome> {
   String? _requestId;
   Timer? _timer;
 
-  void _initializeNotifications() {
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
-
-    final InitializationSettings initializationSettings =
-        InitializationSettings(android: initializationSettingsAndroid);
-
-    flutterLocalNotificationsPlugin.initialize(initializationSettings);
-  }
-
   void showSearchingServiceProviderContainer() {
     setState(() {
-      searchingServiceProviderContainerHeight = 200;
+      searchingServiceProviderContainerHeight = 800;
     });
   }
 
@@ -358,7 +349,7 @@ class _UserhomeState extends State<Userhome> {
   //   }
   // }
 
-  String serviceType = 'c';
+  String serviceType = '';
   String userEmail = '';
   String userPhone = '';
   String userId = '';
@@ -414,6 +405,7 @@ class _UserhomeState extends State<Userhome> {
     };
 
     await referenceRequest!.set(userInformationMap);
+    // _searchServiceBottomSheet(context);
   }
 
   void findService() {}
@@ -483,6 +475,53 @@ class _UserhomeState extends State<Userhome> {
   bool activeNearbyDriverKeysLoaded = false;
 
   BitmapDescriptor? activeNearbyIcon;
+
+  Future<void> retrieveServiceRequest(String serviceType) async {
+    DatabaseReference userRef =
+        FirebaseDatabase.instance.ref().child("serviceProvider");
+
+    userRef.onValue.listen((event) {
+      // Check if there's data
+      if (event.snapshot.exists) {
+        // Get the data as a Map
+        Map<dynamic, dynamic> serviceRequestsMap =
+            Map<dynamic, dynamic>.from(event.snapshot.value as Map);
+
+        // Iterate over the service requests
+        serviceRequestsMap.forEach((key, value) {
+          // Access the 'service' field
+          Map<dynamic, dynamic> serviceProviderInfo =
+              value as Map<dynamic, dynamic>;
+          String? service = serviceProviderInfo['service'] as String?;
+
+          print("$service + servicessssssssssssssssssssssssssssssssssssss");
+
+          if (service != null && serviceType == service) {
+            // Retrieve the service request info
+            String name = serviceProviderInfo['name'].toString();
+
+            String phone = serviceProviderInfo['phone'] ?? 'Unknown';
+
+            LocalNotifications.showNotificaion(
+                title: 'Service Request',
+                body: 'Service request from $name',
+                payload: "$name requesting $service\n Phone: $phone");
+          }
+        });
+      }
+    });
+  }
+
+  void startPeriodicServiceRequestRetrieval() {
+    // Define the timer duration
+    const duration = Duration(seconds: 30);
+
+    // Set up a timer that triggers every 'duration'
+    Timer.periodic(duration, (Timer timer) {
+      // Call your existing data retrieval function
+      retrieveServiceRequest(serviceType);
+    });
+  }
 
   // String selectedVehicleType = "";
 
@@ -769,7 +808,8 @@ class _UserhomeState extends State<Userhome> {
       });
       checkLocationPermission();
       createActiveNearbyDriverMarker();
-      _initializeNotifications();
+      LocalNotifications.init();
+      startPeriodicServiceRequestRetrieval();
     });
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
@@ -1056,6 +1096,90 @@ class _UserhomeState extends State<Userhome> {
     );
   }
 
+  Future _searchServiceBottomSheet(BuildContext context) {
+    return showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+      ),
+      barrierColor: Colors.black,
+      builder: (context) => Container(
+        height: searchingServiceProviderContainerHeight,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const LinearProgressIndicator(
+              color: Colors.green,
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            const Center(
+              child: Text(
+                "Searching For Service Provider...",
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            GestureDetector(
+              onTap: () {
+                referenceRequest!.remove();
+                setState(() {
+                  searchLocationContainerHeight = 0;
+                  suggestedRidesContainerHeight = 0;
+                  searchingServiceProviderContainerHeight = 0;
+                });
+              },
+              child: Container(
+                height: 50,
+                width: 50,
+                decoration: BoxDecoration(
+                  color: Colors.black54,
+                  borderRadius: BorderRadius.circular(25),
+                  border: Border.all(width: 1, color: Colors.grey),
+                ),
+                child: const Icon(
+                  Icons.close,
+                  size: 35,
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 15,
+            ),
+            Container(
+              width: double.infinity,
+              child: const Text(
+                'Cancel',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
   Future _vehicleServiceBottomSheet(BuildContext context) {
     // Create a FocusNode to manage the focus of the TextFormField
 
@@ -1229,7 +1353,9 @@ class _UserhomeState extends State<Userhome> {
                   padding: const EdgeInsets.fromLTRB(10, 0, 8, 4),
                   child: GestureDetector(
                     onTap: () {
-                      setState(() {});
+                      setState(() {
+                        selectedVehicleType = " Two Wheeler";
+                      });
                       // saveSelection(selectedVehicleType);
                     },
                     child: SizedBox(
@@ -1267,7 +1393,9 @@ class _UserhomeState extends State<Userhome> {
                   padding: const EdgeInsets.fromLTRB(10, 0, 8, 4),
                   child: GestureDetector(
                     onTap: () {
-                      setState(() {});
+                      setState(() {
+                        selectedVehicleType = "Four Wheeler";
+                      });
                       // saveSelection(selectedVehicleType);
                     },
                     child: SizedBox(
@@ -1306,7 +1434,9 @@ class _UserhomeState extends State<Userhome> {
                   padding: const EdgeInsets.fromLTRB(10, 0, 8, 4),
                   child: GestureDetector(
                     onTap: () {
-                      setState(() {});
+                      setState(() {
+                        selectedVehicleType = " Heavy Wheeler";
+                      });
                       // saveSelection(selectedVehicleType);
                     },
                     child: SizedBox(
@@ -1349,6 +1479,8 @@ class _UserhomeState extends State<Userhome> {
                 onPressed: () {
                   setState(() {
                     print("hmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
+                    print(serviceType);
+                    print(selectedVehicleType);
                     print(selectService(serviceType, selectedVehicleType));
                     selectService(serviceType, selectedVehicleType);
                   });
@@ -1593,7 +1725,7 @@ class _UserhomeState extends State<Userhome> {
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );
