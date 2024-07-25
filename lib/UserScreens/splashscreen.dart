@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:onroadvehiclebreakdowwn/Assistants/assitant_method.dart';
 import 'package:onroadvehiclebreakdowwn/UserScreens/signup.dart';
 import 'package:onroadvehiclebreakdowwn/UserScreens/userhome.dart';
+import 'package:onroadvehiclebreakdowwn/UserScreens/userlogin.dart';
 import 'package:onroadvehiclebreakdowwn/global/global.dart';
 import 'package:onroadvehiclebreakdowwn/pages/screen.dart';
 
@@ -23,10 +24,16 @@ class _SplashScreenState extends State<SplashScreen> {
             ? AssistantMethods.readCurrentOnlineUserInfo()
             : null;
         Navigator.push(
-            context, MaterialPageRoute(builder: (c) => const Screen()));
+          context,
+          MaterialPageRoute(
+            builder: (c) => const SplashScreen(
+              child: Screen(),
+            ),
+          ),
+        );
       } else {
         Navigator.push(
-            context, MaterialPageRoute(builder: (c) => const SignUp()));
+            context, MaterialPageRoute(builder: (c) => const Userhome()));
       }
     });
   }

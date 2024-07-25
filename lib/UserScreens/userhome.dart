@@ -4,7 +4,9 @@ import 'package:firebase_database/firebase_database.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -17,6 +19,7 @@ import 'package:googleapis/biglake/v1.dart';
 // import 'package:googleapis/dataproc/v1.dart';
 import 'package:onroadvehiclebreakdowwn/Assistants/assitant_method.dart';
 import 'package:onroadvehiclebreakdowwn/Assistants/geofire_assistant.dart';
+import 'package:onroadvehiclebreakdowwn/Assistants/serviceproviderinfo.dart';
 import 'package:onroadvehiclebreakdowwn/Info/app_info.dart';
 
 import 'package:onroadvehiclebreakdowwn/UserScreens/drawerscreen.dart';
@@ -24,12 +27,14 @@ import 'package:onroadvehiclebreakdowwn/UserScreens/drawerscreen.dart';
 import 'package:location/location.dart' as loc;
 import 'package:connectivity/connectivity.dart';
 import 'package:onroadvehiclebreakdowwn/UserScreens/localNotification.dart';
-import 'package:onroadvehiclebreakdowwn/UserScreens/requestscreen.dart';
+
+import 'package:onroadvehiclebreakdowwn/UserScreens/serviceproviderlocaton.dart';
 import 'package:onroadvehiclebreakdowwn/UserScreens/splashscreen.dart';
 import 'package:onroadvehiclebreakdowwn/global/global.dart';
 import 'package:onroadvehiclebreakdowwn/main.dart';
 import 'package:onroadvehiclebreakdowwn/models/activeServiceProviders.dart';
 import 'package:onroadvehiclebreakdowwn/models/directions.dart';
+import 'package:onroadvehiclebreakdowwn/models/retrievedata.dart';
 import 'package:onroadvehiclebreakdowwn/widgets/progress.dialog.dart';
 import 'package:provider/provider.dart';
 
@@ -71,6 +76,8 @@ class _UserhomeState extends State<Userhome> {
 
   String userRequestStatus = "";
 
+  bool showLoad = false;
+
   //\ StreamSubscription<DatabaseEvent>? tripRidesRequestInfoStreamSubscription
 
   String serviceRideStatus = "On their way";
@@ -104,147 +111,6 @@ class _UserhomeState extends State<Userhome> {
     });
   }
 
-  // saveSelection(String selectedVehicleType) async {
-  //   //save ServiceRequest
-
-  //   referenceRequest =
-  //       FirebaseDatabase.instance.ref().child("Service Requests").push();
-
-  //   var originLocation =
-  //       Provider.of<AppInfo>(context, listen: false).userPickUpLocation;
-
-  //   var destinationLocation =
-  //       Provider.of<AppInfo>(context, listen: false).userPickUpLocation;
-
-  //   Map originLocationMap = {
-  //     //"key:value"
-  //     "latitude": destinationLocation!.locationLatitude.toString(),
-  //     "longitude": destinationLocation.locationLongitude.toString(),
-  //   };
-
-  //   Map destinationLocationMap = {
-  //     //"key:value"
-  //     "latitude": destinationLocation.locationLatitude.toString(),
-  //     "longitude": destinationLocation.locationLongitude.toString(),
-  //   };
-
-  //   Map userInformationMap = {
-  //     "origin": originLocationMap,
-  //     "destination": destinationLocationMap,
-  //     "time": DateTime.now().toString(),
-  //     "userName": userModelCurrentInfo!.name,
-  //     "userPhone": userModelCurrentInfo!.phone,
-  //     "originAddress": originLocation!.locationName,
-  //     "destinationAddress": destinationLocation.locationName,
-  //     "serviceID": "waiting",
-  //   };
-
-  //   referenceRequest!.set(userInformationMap);
-
-  //   tripRidesRequestInfoStreamSubscription =
-  //       referenceRequest!.onValue.listen((eventSnap) async {
-  //     if (eventSnap.snapshot.value == null) {
-  //       return;
-  //     }
-
-  //     //    for (var doc in eventSnap.docs) {
-  //     //    if (doc.data() == null) {
-  //     //      return;
-  //     // }
-
-  //     // if ((eventSnap.snapshot.value as Map)["car_details"] != null) {
-  //     //   setState(() {
-  //     //     driverCarDetails =
-  //     //         (eventSnap.snapshot.value as Map)["car_details"].toString();
-  //     //   });
-  //     // }
-
-  //     if ((eventSnap.snapshot.value as Map)["name"] != null) {
-  //       setState(() {
-  //         driverCarDetails =
-  //             (eventSnap.snapshot.value as Map)["name"].toString();
-  //       });
-  //     }
-
-  //     if ((eventSnap.snapshot.value as Map)["phone"] != null) {
-  //       setState(() {
-  //         driverCarDetails =
-  //             (eventSnap.snapshot.value as Map)["phone"].toString();
-  //       });
-  //     }
-
-  //     if ((eventSnap.snapshot.value as Map)["status"] != null) {
-  //       setState(() {
-  //         userRequestStatus =
-  //             (eventSnap.snapshot.value as Map)["status"].toString();
-  //       });
-  //     }
-
-  //     if ((eventSnap.snapshot.value as Map)["ServiceProviderLocation"] !=
-  //         null) {
-  //       double driverCurrentPositionLat = double.parse((eventSnap.snapshot.value
-  //               as Map)["ServiceProviderLocation"]["latitude"]
-  //           .toString());
-
-  //       double driverCurrentPositionLng = double.parse((eventSnap.snapshot.value
-  //               as Map)["ServiceProviderLocation"]["longitude"]
-  //           .toString());
-
-  //       LatLng driverCurrentPositionLatLng =
-  //           LatLng(driverCurrentPositionLat, driverCurrentPositionLng);
-
-  //       if (userRequestStatus == "accepted") {
-  //         updateArrivalTimeToUser(driverCurrentPositionLatLng);
-  //       }
-
-  //       //status  = arrived
-
-  //       if (userRequestStatus == "Service Provider has arrived") {
-  //         setState(() {
-  //           serviceRideStatus = "Service Provider has arrived";
-  //         });
-  //       }
-
-  //       if (userRequestStatus == "ontrip") {
-  //         updateReachingTime(driverCurrentPositionLatLng);
-  //       }
-
-  //       if (userRequestStatus == " ended") {
-  //         if ((eventSnap.snapshot.value as Map)["fareAmount"] != null) {
-  //           double fareAmount = double.parse(
-  //               (eventSnap.snapshot.value as Map)["fareAmount"].toString());
-
-  //           // var response = await showDialog(
-  //           //     context: context,
-  //           //     builder: (BuildContext context) =>
-  //           //     //  PayFareAmountDialog(
-  //           //     //       fareAmount: fareAmount,
-  //           //     //     )
-  //           //         );
-  //           var response = "";
-  //           if (response == "Cash Paid") {
-  //             if ((eventSnap.snapshot.value as Map)["serviceID"] != null) {
-  //               String assignedServiceID =
-  //                   (eventSnap.snapshot.value as Map)["serviceID"].toString();
-
-  //               // Navgator.push(context, MaterialPageRoute(builder: (c) => {
-  //               //   RateDriverScreen();
-  //               // }));
-
-  //               referenceRequest!.onDisconnect();
-  //               tripRidesRequestInfoStreamSubscription!.cancel();
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //   });
-
-  //   onlineNearbyServiceProviderList = GeofireAssistant.activeServiceList;
-
-  //   searchNearestOnlineDrivers(selectedVehicleType);
-  // }
-
   showAssignedServiceProviderInfo() {
     setState(() {
       waitingLocationContainerHeight = 0;
@@ -255,99 +121,6 @@ class _UserhomeState extends State<Userhome> {
     });
   }
 
-  // Future<void> retrieveServiceProviderInfo(
-  //     List<ActiveServiceProviders> onlineNearbyServiceProviderList) async {
-  //   serviceProviderList.clear();
-  //   DatabaseReference ref =
-  //       FirebaseDatabase.instance.ref().child("Service Providers");
-
-  //   for (int i = 0; i < onlineNearbyServiceProviderList.length; i++) {
-  //     String serviceId = onlineNearbyServiceProviderList[i].id.toString();
-  //     print("Fetching info for service ID: $serviceId");
-
-  //     await ref.child(serviceId).once().then((dataSnapshot) {
-  //       var driverKeyInfo = dataSnapshot.snapshot.value;
-  //       if (driverKeyInfo != null) {
-  //         serviceProviderList.add(driverKeyInfo);
-  //         print("Service key Information: " + serviceProviderList.toString());
-  //       } else {
-  //         print("No info found for service ID: $serviceId");
-  //       }
-  //     }).catchError((error) {
-  //       print("Error fetching info for service ID: $serviceId - $error");
-  //     });
-  //   }
-  //   print("Completed retrieveServiceProviderInfo. List: $serviceProviderList");
-  // }
-
-  // searchNearestOnlineDrivers(String selectedVehicleType) async {
-  //   try {
-  //     print(referenceRequest);
-  //     print("--------------------------------");
-  //     print(
-  //         "Online Nearby Service Provider List: $onlineNearbyServiceProviderList");
-
-  //     if (onlineNearbyServiceProviderList == 0) {
-  //       // Cancel the service request if no service provider is available
-  //       if (referenceRequest != null) {
-  //         referenceRequest!.remove();
-  //       } else {
-  //         print("referenceRequest is null");
-  //       }
-
-  //       setState(() {
-  //         polyLineSet.clear();
-  //         markersSet.clear();
-  //         circlesSet.clear();
-  //         // pLineCoordinateList.clear();
-  //       });
-
-  //       Fluttertoast.showToast(msg: "No service Provider available ");
-  //       Fluttertoast.showToast(msg: "Search again. \n Restarting App");
-
-  //       Future.delayed(const Duration(milliseconds: 4000), () {
-  //         if (referenceRequest != null) {
-  //           referenceRequest!.remove();
-  //         }
-  //         Navigator.push(
-  //             context, MaterialPageRoute(builder: (c) => const SplashScreen()));
-  //       });
-  //       return;
-  //     }
-
-  //     await retrieveServiceProviderInfo(onlineNearbyServiceProviderList);
-
-  //     print(
-  //         "Retrieved Service Provider Info: " + serviceProviderList.toString());
-
-  //     for (int i = 0; i < serviceProviderList.length; i++) {
-  //       // Send in-app notification to service providers
-
-  //       AssistantMethods.sendNotificationToSelectedDriver(
-  //           serviceProviderList[i]["token"], context, referenceRequest!.key!);
-  //     }
-
-  //     Fluttertoast.showToast(msg: "Notification Sent ");
-  //     showSearchingServiceProviderContainer();
-
-  //     FirebaseDatabase.instance
-  //         .ref()
-  //         .child("Service Requests")
-  //         .child(referenceRequest!.key!)
-  //         .child("serviceID")
-  //         .onValue
-  //         .listen((event) {
-  //       print("Event : ${event.snapshot.value}");
-  //       if (event.snapshot.value != null) {
-  //         if (event.snapshot.value != "waiting") {
-  //           showAssignedServiceProviderInfo();
-  //         }
-  //       }
-  //     });
-  //   } catch (e) {
-  //     print("An error occurred: $e");
-  //     Fluttertoast.showToast(msg: "An error occurred: $e");
-  //   }
   // }
 
   String serviceType = '';
@@ -359,40 +132,52 @@ class _UserhomeState extends State<Userhome> {
 
   Future<void> selectService(
       String serviceType, String selectedVehicleType) async {
+    // Initialize referenceRequest and userRef
     referenceRequest =
         FirebaseDatabase.instance.ref().child("Service Requests").push();
+    DatabaseReference userRef =
+        FirebaseDatabase.instance.ref().child("userInfo");
 
-    // DatabaseReference userRef =
-    //     FirebaseDatabase.instance.ref().child("userInfo");
+    // Get user data from Firebase
+    userRef.child(firebaseAuth.currentUser!.uid).onValue.listen((event) {
+      if (event.snapshot.value != null) {
+        Map<String, dynamic> userData =
+            Map<String, dynamic>.from(event.snapshot.value as Map);
+        setState(() {
+          userName = userData['name'] ?? '';
+          userEmail = userData['email'] ?? '';
+          userPhone = userData['phone'] ?? '';
+          userId = userData['id'] ?? '';
+          service = userData['service'] ?? '';
+        });
+      } else {
+        print("No user data found.");
+      }
+    });
 
-    // userRef.child(firebaseAuth.currentUser!.uid).onValue.listen((event) {
-    //   Map<String, dynamic> userData =
-    //       Map<String, dynamic>.from(event.snapshot.value as Map);
-    //   setState(() {
-    //     userName = userData['name'] ?? '';
-    //     userEmail = userData['email'] ?? '';
-    //     userPhone = userData['phone'] ?? '';
-    //     userId = userData['id'] ?? '';
-    //     service = userData['service'] ?? '';
-    //   });
-    // });
-
+    // Ensure originLocation is not null
     var originLocation =
         Provider.of<AppInfo>(context, listen: false).userPickUpLocation;
+    if (originLocation == null) {
+      print("Error: originLocation is null.");
+      return;
+    }
 
-    Map serviceProviderInfo = {
-      "name": '',
-      "phone": '',
-      "email": '',
-      "service": '',
-    };
-
+    // Map for origin location
     Map originLocationMap = {
-      //"key:value"
-      "latitude": originLocation!.locationLatitude.toString(),
-      "longitude": originLocation.locationLongitude.toString(),
+      "latitude": originLocation.locationLatitude,
+      "longitude": originLocation.locationLongitude,
     };
 
+    // Ensure userName and other fields are not null
+    if (userName == null ||
+        userPhone == null ||
+        originLocation.locationName == null) {
+      print("Error: One or more user fields are null.");
+      return;
+    }
+
+    // Map for user information
     Map userInformationMap = {
       "origin": originLocationMap,
       "time": DateTime.now().toString(),
@@ -402,17 +187,20 @@ class _UserhomeState extends State<Userhome> {
       "serviceID": "waiting",
       "service": serviceType,
       "vehicleType": selectedVehicleType,
-      "serviceProvider": serviceProviderInfo,
     };
 
+    print("$userModelCurrentInfo");
+
+    // Set data in Firebase
     await referenceRequest!.set(userInformationMap);
-    // _searchServiceBottomSheet(context);
   }
 
   void findService() {}
 
   // String userName = userModelCurrentInfo?.name ?? '';
   // String userEmail = userModelCurrentInfo?.email ?? '';
+  ServiceProviderInfo? serviceProviderInformation;
+  Retrievedata? userHistory;
 
   bool requestPositionInfo = true;
 
@@ -477,27 +265,28 @@ class _UserhomeState extends State<Userhome> {
 
   BitmapDescriptor? activeNearbyIcon;
 
-  getNotification() {
+  void getNotification() {
     print("Listening for notifications");
-    LocalNotifications.onClickedNotification.stream.listen((event) {
-      showNotification(event);
-    });
-  }
 
-  showNotification(payload) {
-    // String ee = payload;
-    return showModalBottomSheet(
-        context: context,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(30),
+    LocalNotifications.onClickedNotification.stream.listen((event) {
+      // Check if serviceProviderInformation is null
+      if (serviceProviderInformation != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Serviceproviderlocation(
+              serviceProviderInfo: serviceProviderInformation,
+              payload: event,
+            ),
           ),
-        ),
-        builder: (context) => SizedBox(
-              height: 400,
-              width: 300,
-              child: Text(payload),
-            ));
+        );
+        print(
+            "$serviceProviderInformation  + shjshsjhfjhfsjfhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhj");
+      } else {
+        print(
+            "ServiceProviderInformation is null. Cannot navigate.$serviceProviderInformation");
+      }
+    });
   }
 
   Future<void> retrieveServiceRequest(String serviceType) async {
@@ -505,33 +294,73 @@ class _UserhomeState extends State<Userhome> {
         FirebaseDatabase.instance.ref().child("serviceProvider");
 
     userRef.onValue.listen((event) {
-      // Check if there's data
       if (event.snapshot.exists) {
-        // Get the data as a Map
         Map<dynamic, dynamic> serviceRequestsMap =
             Map<dynamic, dynamic>.from(event.snapshot.value as Map);
 
-        // Iterate over the service requests
         serviceRequestsMap.forEach((key, value) {
-          // Access the 'service' field
           Map<dynamic, dynamic> serviceProviderInfo =
-              value as Map<dynamic, dynamic>;
+              Map<dynamic, dynamic>.from(value as Map<dynamic, dynamic>);
           String? service = serviceProviderInfo['service'] as String?;
+          String? name = serviceProviderInfo['name'] as String?;
+          String? phone = serviceProviderInfo['phone'] as String?;
+          String? originAddress =
+              serviceProviderInfo['originAddress'] as String?;
+          String? time = serviceProviderInfo['time'] as String?;
 
-          print("$service + servicessssssssssssssssssssssssssssssssssssss");
+          // Check if 'location' exists and has valid latitude and longitude
+          if (serviceProviderInfo.containsKey('location') &&
+              serviceProviderInfo['location'] != null) {
+            Map<dynamic, dynamic> origin = Map<dynamic, dynamic>.from(
+                serviceProviderInfo['location'] as Map<dynamic, dynamic>);
 
-          if (service != null && serviceType == service) {
-            // Retrieve the service request info
-            String name = serviceProviderInfo['name'].toString();
+            if (origin.containsKey('latitude') &&
+                origin.containsKey('longitude') &&
+                origin['latitude'] != null &&
+                origin['longitude'] != null) {
+              double originLatitude =
+                  double.tryParse(origin['latitude'].toString()) ?? 0.0;
+              double originLongitude =
+                  double.tryParse(origin['longitude'].toString()) ?? 0.0;
+              LatLng originLatLng = LatLng(originLatitude, originLongitude);
 
-            String phone = serviceProviderInfo['phone'] ?? 'Unknown';
+              if (serviceType == service) {
+                serviceProviderInformation = ServiceProviderInfo(
+                  serivceProviderLocation: originLatLng,
+                  serivceProviderName: name,
+                  serivceProviderPhone: phone,
+                );
 
-            LocalNotifications.showSimpleNotification(
-                title: 'Service Request Accepted',
-                body: 'Service Provider $name of his way',
-                payload: "$name requesting $service\n Phone: $phone");
+                var originLocation =
+                    Provider.of<AppInfo>(context, listen: false)
+                        .userPickUpLocation;
+
+                userHistory = Retrievedata(
+                    service: serviceType,
+                    userName: userModelCurrentInfo!.name,
+                    userlocation: originLocation.toString(),
+                    serviceProviderLocation: originAddress,
+                    serviceProviderName: name,
+                    serviceProviderService: service,
+                    servviceProviderPhone: phone,
+                    time: time);
+
+                // Retrieve the service request info
+                LocalNotifications.showSimpleNotification(
+                  title: 'Service Request Accepted',
+                  body: 'Service Provider $name is on their way',
+                  payload: "$name on the way $service\nPhone: $phone",
+                );
+              }
+            } else {
+              print('Invalid latitude or longitude in location map.');
+            }
+          } else {
+            print('Location information is missing or null.');
           }
         });
+      } else {
+        print('No service provider data available.');
       }
     });
   }
@@ -543,141 +372,11 @@ class _UserhomeState extends State<Userhome> {
     // Set up a timer that triggers every 'duration'
     Timer.periodic(duration, (Timer timer) {
       // Call your existing data retrieval function
-      retrieveServiceRequest(serviceType);
+      retrieveServiceRequest("Vulcanizer");
     });
   }
 
   // String selectedVehicleType = "";
-
-  Future<void> drawPolylineFromOriginToDestination(bool darkTheme) async {
-    var originPosition =
-        Provider.of<AppInfo>(context, listen: false).userPickUpLocation;
-    var destinationPosition =
-        Provider.of<AppInfo>(context, listen: false).userDropOffLocation;
-
-    var originLatLng = LatLng(
-        originPosition!.locationLatitude!, originPosition.locationLongitude!);
-
-    var destinationLatLng = LatLng(destinationPosition!.locationLatitude!,
-        destinationPosition.locationLongitude!);
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => ProgressDialog(
-        message: "Please wait....",
-      ),
-    );
-
-    var directionDetailsInfo =
-        await AssistantMethods.obtainOriginToDestinationDirectionsDetails(
-            originLatLng, destinationLatLng);
-
-    setState(() {
-      serviceDirectionDetailsInfo = directionDetailsInfo;
-    });
-
-    Navigator.pop(context);
-
-    PolylinePoints pPoints = PolylinePoints();
-
-    List<PointLatLng> decodePolylinePointsResultList =
-        pPoints.decodePolyline(directionDetailsInfo!.ePoints!);
-
-    pLineCoordinateList.clear();
-
-    if (decodePolylinePointsResultList.isNotEmpty) {
-      decodePolylinePointsResultList.forEach((PointLatLng pointLatLng) {
-        pLineCoordinateList
-            .add(LatLng(pointLatLng.latitude, pointLatLng.longitude));
-      });
-    }
-
-    polyLineSet.clear();
-
-    setState(() {
-      Polyline polyline = Polyline(
-        color: Colors.black54,
-        polylineId: const PolylineId("PolylineID"),
-        jointType: JointType.round,
-        points: pLineCoordinateList,
-        startCap: Cap.roundCap,
-        endCap: Cap.roundCap,
-        geodesic: true,
-        width: 5,
-      );
-      polyLineSet.add(polyline);
-    });
-
-    LatLngBounds boundsLatLng;
-
-    if (originLatLng.latitude > destinationLatLng.latitude &&
-        originLatLng.longitude > destinationLatLng.longitude) {
-      boundsLatLng =
-          LatLngBounds(southwest: destinationLatLng, northeast: originLatLng);
-    } else if (originLatLng.latitude > originLatLng.longitude) {
-      boundsLatLng = LatLngBounds(
-        southwest: LatLng(originLatLng.latitude, destinationLatLng.longitude),
-        northeast: LatLng(destinationLatLng.latitude, originLatLng.longitude),
-      );
-    } else if (originLatLng.latitude > destinationLatLng.longitude) {
-      boundsLatLng = LatLngBounds(
-        southwest: LatLng(destinationLatLng.latitude, originLatLng.longitude),
-        northeast: LatLng(destinationLatLng.latitude, originLatLng.longitude),
-      );
-    } else {
-      boundsLatLng =
-          LatLngBounds(southwest: originLatLng, northeast: destinationLatLng);
-    }
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      newcontrollerGoogleMap
-          ?.animateCamera(CameraUpdate.newLatLngBounds(boundsLatLng, 65));
-    });
-
-    Marker originMarker = Marker(
-      markerId: const MarkerId("originID"),
-      infoWindow:
-          InfoWindow(title: originPosition.locationName, snippet: 'Origin'),
-      position: originLatLng,
-      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-    );
-
-    Marker destinationMarker = Marker(
-      markerId: const MarkerId("destinationID"),
-      infoWindow: InfoWindow(
-          title: destinationPosition.locationName, snippet: 'Destination'),
-      position: destinationLatLng,
-      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-    );
-
-    setState(() {
-      markersSet.add(originMarker);
-      markersSet.add(destinationMarker);
-    });
-
-    Circle originCircle = Circle(
-      circleId: const CircleId("originID"),
-      fillColor: Colors.green,
-      radius: 12,
-      strokeWidth: 3,
-      strokeColor: Colors.white,
-      center: originLatLng,
-    );
-
-    Circle destinationCircle = Circle(
-      circleId: const CircleId("destinationID"),
-      fillColor: Colors.red,
-      radius: 12,
-      strokeWidth: 3,
-      strokeColor: Colors.white,
-      center: destinationLatLng,
-    );
-
-    setState(() {
-      circlesSet.add(originCircle);
-      circlesSet.add(destinationCircle);
-    });
-  }
 
   intializeGeoFireListener() {
     Geofire.initialize("activeService");
@@ -810,7 +509,7 @@ class _UserhomeState extends State<Userhome> {
     if (activeNearbyIcon == null) {
       ImageConfiguration imageConfiguration = createLocalImageConfiguration(
           context,
-          /* include size of image*/ size: const Size(2, 2));
+          /* include size of image*/ size: const Size(48, 48));
       BitmapDescriptor.fromAssetImage(imageConfiguration, 'assets/towin.jpeg')
           .then((value) {
         activeNearbyIcon = value;
@@ -833,7 +532,7 @@ class _UserhomeState extends State<Userhome> {
       checkLocationPermission();
       createActiveNearbyDriverMarker();
       LocalNotifications.init();
-      startPeriodicServiceRequestRetrieval();
+
       getNotification();
     });
     _connectivitySubscription =
@@ -862,7 +561,7 @@ class _UserhomeState extends State<Userhome> {
       builder: (context) => SizedBox(
         height: 400,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(0, 15, 0, 0),
+          padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
           child: Column(
             children: [
               const Center(
@@ -884,235 +583,189 @@ class _UserhomeState extends State<Userhome> {
                 ),
               ),
               const SizedBox(
-                height: 30,
-              ),
-              Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(55, 10, 10, 0),
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          serviceType = " Vulcanizer ";
-                        });
-                        _vehicleServiceBottomSheet(context);
-                      },
-                      child: SizedBox(
-                        height: 75,
-                        width: 60,
-                        child: Image.asset(
-                          'assets/R (2).png',
-                          height: 75,
-                          width: 60,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(120, 10, 10, 0),
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          serviceType = "Fuel/Battery Emergency";
-                        });
-                        _vehicleServiceBottomSheet(context);
-                      },
-                      child: SizedBox(
-                        height: 75,
-                        width: 60,
-                        child: Image.asset(
-                          "assets/R (1).png",
-                          height: 75,
-                          width: 60,
-                        ),
-                      ),
-                    ),
-                  )
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                child: Row(
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          serviceType = "Vulcanizer";
-                        });
-                        _vehicleServiceBottomSheet(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        shape: const RoundedRectangleBorder(
-                          side: BorderSide(
-                            style: BorderStyle.none,
-                          ),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: const Padding(
-                        padding: EdgeInsets.fromLTRB(12.0, 0, 0, 0),
-                        child: Text(
-                          "Flat Tyre",
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(48, 0, 0, 0),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            serviceType = "Fuel/Battery Emergency";
-                          });
-                          _vehicleServiceBottomSheet(context);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shape: const RoundedRectangleBorder(
-                            side: BorderSide(
-                              style: BorderStyle.none,
-                            ),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: const Padding(
-                          padding: EdgeInsets.fromLTRB(9.0, 0, 0, 0),
-                          child: Text(
-                            "Battery Emergency",
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(
                 height: 10,
               ),
               Row(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(50, 0, 30, 5),
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          serviceType = "Towing Emergency";
-                        });
-                        _vehicleServiceBottomSheet(context);
-                      },
-                      child: SizedBox(
-                        height: 75,
-                        width: 60,
-                        child: Image.asset(
-                          "assets/R (3).png",
-                          height: 75,
-                          width: 60,
-                        ),
-                      ),
-                    ),
-                  ),
                   const SizedBox(
-                    width: 10,
+                    width: 30,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(100, 0, 10, 0),
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          serviceType = "Fuel/Battery Emergency";
-                        });
-                        _vehicleServiceBottomSheet(context);
-                      },
-                      child: SizedBox(
-                        height: 75,
-                        width: 60,
-                        child: Image.asset(
-                          "assets/download (10).jfif",
-                          height: 75,
-                          width: 60,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                child: Row(
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          serviceType = "Towing Emergency";
-                        });
-                        _vehicleServiceBottomSheet(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        shape: const RoundedRectangleBorder(
-                          side: BorderSide(
-                            style: BorderStyle.none,
+                  Column(
+                    children: [
+                      SizedBox(
+                        width: 100,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                serviceType = "Vulcanizer";
+                              });
+                              Navigator.pop(context);
+                              _vehicleServiceBottomSheet(context);
+                            },
+                            child: Image.asset(
+                              "assets/red-pump-inflates-car-wheel_124715-2293.avif",
+                              width: 100,
+                            ),
                           ),
                         ),
-                        elevation: 0,
                       ),
-                      child: const Text(
-                        "Towing Emergency",
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black,
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            serviceType = "Vulcanizer";
+                          });
+                          Navigator.pop(context);
+                          _vehicleServiceBottomSheet(context);
+                        },
+                        child: const Text(
+                          "Flat Tyre",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(
+                    width: 130,
+                  ),
+                  Column(
+                    children: [
+                      SizedBox(
+                        width: 80,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                serviceType = "Fuel/Battery Emergency";
+                              });
+                              Navigator.pop(context);
+                              _vehicleServiceBottomSheet(context);
+                            },
+                            child: Image.asset(
+                              "assets/battery-icon-cartoon-illustration-battery-vector-icon-web_96318-30803.avif",
+                              width: 80,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        // setState(() {
-                        //   serviceType = "Fuel/Battery Emergency";
-                        //   _vehicleServiceBottomSheet(context);
-                        // });
-                      },
-                      child: ElevatedButton(
-                        onPressed: () {
+                      GestureDetector(
+                        onTap: () {
                           setState(() {
                             serviceType = "Fuel/Battery Emergency";
                           });
+                          Navigator.pop(context);
                           _vehicleServiceBottomSheet(context);
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shape: const RoundedRectangleBorder(
-                            side: BorderSide(
-                              style: BorderStyle.none,
-                            ),
+                        child: const Text(
+                          "Battery Issue",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
                           ),
-                          elevation: 0,
                         ),
-                        child: const Padding(
-                          padding: EdgeInsets.fromLTRB(15.0, 0, 0, 0),
-                          child: Text(
-                            "Fuel Emergency",
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black,
+                      )
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              Row(
+                children: [
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Column(
+                    children: [
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      SizedBox(
+                        width: 100,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                serviceType = "Towing Emergency";
+                              });
+                              Navigator.pop(context);
+                              _vehicleServiceBottomSheet(context);
+                            },
+                            child: Image.asset(
+                              "assets/truck-picking-up-car-road-service-vehicle_533410-2461.avif",
+                              width: 100,
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            serviceType = "Towing Emergency";
+                          });
+                          Navigator.pop(context);
+                          _vehicleServiceBottomSheet(context);
+                        },
+                        child: const Text(
+                          "Towing emergency",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(
+                    width: 100,
+                  ),
+                  Column(
+                    children: [
+                      SizedBox(
+                        width: 80,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                serviceType = "Fuel/Battery Emergency";
+                              });
+                              Navigator.pop(context);
+                              _vehicleServiceBottomSheet(context);
+                            },
+                            child: Image.asset(
+                              "assets/gas-station-cartoon-icon-illustration_138676-2605.avif",
+                              width: 80,
+                            ),
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            serviceType = "Fuel/Battery Emergency";
+                          });
+                          Navigator.pop(context);
+                          _vehicleServiceBottomSheet(context);
+                        },
+                        child: const Text(
+                          "Fuel emergency",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),
@@ -1124,84 +777,110 @@ class _UserhomeState extends State<Userhome> {
   Future _searchServiceBottomSheet(BuildContext context) {
     return showModalBottomSheet(
       context: context,
+      isDismissible: false, // Prevent dismissal by tapping outside
+      enableDrag: false,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+          topLeft: Radius.circular(50),
+          topRight: Radius.circular(50),
         ),
       ),
-      barrierColor: Colors.black,
-      builder: (context) => Container(
-        height: searchingServiceProviderContainerHeight,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(16),
-            topRight: Radius.circular(16),
+      barrierColor: Colors.transparent,
+      builder: (context) {
+        Future.delayed(const Duration(seconds: 40), () {
+          if (Navigator.canPop(context)) {
+            Navigator.pop(context); // Automatically close after 40 seconds
+          }
+        });
+
+        return Container(
+          height: 400,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+            ),
           ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const LinearProgressIndicator(
-              color: Colors.green,
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            const Center(
-              child: Text(
-                "Searching For Service Provider...",
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontWeight: FontWeight.bold,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const LinearProgressIndicator(
+                color: Colors.green,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              const Center(
+                child: Text(
+                  "Waiting For A Service Provider...",
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            GestureDetector(
-              onTap: () {
-                referenceRequest!.remove();
-                setState(() {
-                  searchLocationContainerHeight = 0;
-                  suggestedRidesContainerHeight = 0;
-                  searchingServiceProviderContainerHeight = 0;
-                });
-              },
-              child: Container(
-                height: 50,
-                width: 50,
-                decoration: BoxDecoration(
-                  color: Colors.black54,
-                  borderRadius: BorderRadius.circular(25),
-                  border: Border.all(width: 1, color: Colors.grey),
-                ),
-                child: const Icon(
-                  Icons.close,
-                  size: 35,
+              const SizedBox(
+                height: 10,
+              ),
+              Image.asset(
+                "assets/Towing.gif",
+                height: 200,
+                width: 200,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              GestureDetector(
+                onTap: () {
+                  referenceRequest!.remove();
+                  setState(() {
+                    searchLocationContainerHeight = 0;
+                    suggestedRidesContainerHeight = 0;
+                    searchingServiceProviderContainerHeight = 0;
+                  });
+                  Navigator.pop(context); // Manually close on tap
+                },
+                child: Container(
+                  height: 60,
+                  width: 60,
+                  decoration: BoxDecoration(
+                    color: Colors.green,
+                    borderRadius: BorderRadius.circular(45),
+                    border: Border.all(width: 4, color: Colors.green),
+                  ),
+                  child: const Icon(
+                    Icons.close,
+                    size: 45,
+                    color: Colors.white,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            Container(
-              width: double.infinity,
-              child: const Text(
-                'Cancel',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.red,
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
+              const SizedBox(
+                height: 15,
               ),
-            )
-          ],
-        ),
-      ),
+              Container(
+                width: 300,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context); // Manually close on tap
+                  },
+                  child: const Text(
+                    'Cancel',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -1313,14 +992,17 @@ class _UserhomeState extends State<Userhome> {
                         });
                         // saveSelection(selectedVehicleType);
                       },
-                      child: Container(
-                        color: selectedVehicleType == "Two Wheeler"
-                            ? Colors.black
-                            : Colors.white,
-                        child: Image.asset(
-                          "assets/Scooter-512.webp",
-                          height: 90,
-                          width: 90,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Container(
+                          color: selectedVehicleType == "Two Wheeler"
+                              ? Colors.black
+                              : Colors.white,
+                          child: Image.asset(
+                            "assets/green-scooter_1308-84081.avif",
+                            height: 80,
+                            width: 85,
+                          ),
                         ),
                       ),
                     ),
@@ -1335,14 +1017,17 @@ class _UserhomeState extends State<Userhome> {
 
                         // saveSelection(selectedVehicleType);
                       },
-                      child: Container(
-                        color: selectedVehicleType == "Four Wheeler"
-                            ? Colors.black
-                            : Colors.white,
-                        child: Image.asset(
-                          "assets/off-road-car-4x4-512.webp",
-                          height: 80,
-                          width: 75,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Container(
+                          color: selectedVehicleType == "Four Wheeler"
+                              ? Colors.black
+                              : Colors.white,
+                          child: Image.asset(
+                            "assets/car-2026848_1280.png",
+                            height: 80,
+                            width: 85,
+                          ),
                         ),
                       ),
                     ),
@@ -1357,14 +1042,17 @@ class _UserhomeState extends State<Userhome> {
 
                         // saveSelection(selectedVehicleType);
                       },
-                      child: Container(
-                        color: selectedVehicleType == "Heavy Wheeler"
-                            ? Colors.black
-                            : Colors.white,
-                        child: Image.asset(
-                          "assets/truck.png",
-                          height: 80,
-                          width: 75,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Container(
+                          color: selectedVehicleType == "Heavy Wheeler"
+                              ? Colors.black
+                              : Colors.white,
+                          child: Image.asset(
+                            "assets/trash-truck-white-background_1308-24888.avif",
+                            height: 80,
+                            width: 85,
+                          ),
                         ),
                       ),
                     ),
@@ -1501,34 +1189,44 @@ class _UserhomeState extends State<Userhome> {
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    print("hmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
-                    print(serviceType);
-                    print(selectedVehicleType);
-                    print(selectService(serviceType, selectedVehicleType));
-                    _searchServiceBottomSheet(context);
-                    selectService(serviceType, selectedVehicleType);
-                  });
+                onPressed: () async {
+                  try {
+                    // setState(() {
+                    //   showLoad = true;
+                    // });
 
-                  // searchNearestOnlineDrivers(selectedVehicleType);
-                  // saveSelection(selectedVehicleType);
-                  //   Fluttertoast.showToast(
-                  //       msg: "Please select a vehicle from above");
-                  // }
-                  // setState(() {
-                  //   // searchNearestOnlineDrivers();
+                    await Future.delayed(const Duration(seconds: 3));
+                    Navigator.pop(context);
 
-                  //   // searchingServiceProviderContainerHeight = 400;
-                  // });
+                    startPeriodicServiceRequestRetrieval();
+
+                    // Add a delay of 2 seconds
+                    if (mounted) {
+                      // setState(() {
+                      //   showLoad = false;
+                      // });
+                      // Ensure the widget is still mounted before showing the bottom sheet
+
+                      _searchServiceBottomSheet(context);
+                      // await Future.delayed(const Duration(seconds: 10));
+
+                      setState(() {
+                        selectService(serviceType, selectedVehicleType);
+                      });
+                    }
+                  } catch (e) {
+                    print('Error: $e'); // Print any errors for debugging
+                  }
                 },
                 style: ElevatedButton.styleFrom(
-                    elevation: 2,
-                    fixedSize: const Size(350, 60),
-                    backgroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        side: const BorderSide(style: BorderStyle.solid))),
+                  elevation: 2,
+                  fixedSize: const Size(350, 60),
+                  backgroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    side: const BorderSide(style: BorderStyle.solid),
+                  ),
+                ),
                 child: const Text(
                   "Find Service",
                   style: TextStyle(color: Colors.white, fontSize: 18),
@@ -1546,7 +1244,9 @@ class _UserhomeState extends State<Userhome> {
     //  createActiveNearbyDriverMarker();
     return Scaffold(
       key: _scaffoldState,
-      drawer: DrawerScreen(),
+      drawer: DrawerScreen(
+        userHistory: userHistory,
+      ),
       body: Stack(
         children: [
           showMap
@@ -1606,8 +1306,8 @@ class _UserhomeState extends State<Userhome> {
             child: Container(
               child: GestureDetector(
                 onTap: () {
+                  // _scaffoldState.currentState!.openDrawer();
                   _scaffoldState.currentState!.openDrawer();
-                  // widget._scaffoldState.currentState!.openDrawer();
                 },
                 child: const CircleAvatar(
                   backgroundColor: Colors.white,
@@ -1652,82 +1352,82 @@ class _UserhomeState extends State<Userhome> {
           //     ),
           //   ),
           // ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: searchingServiceProviderContainerHeight,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16),
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const LinearProgressIndicator(
-                    color: Colors.green,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const Center(
-                    child: Text(
-                      "Searching For Service Provider...",
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      referenceRequest!.remove();
-                      setState(() {
-                        searchLocationContainerHeight = 0;
-                        suggestedRidesContainerHeight = 0;
-                        searchingServiceProviderContainerHeight = 0;
-                      });
-                    },
-                    child: Container(
-                      height: 50,
-                      width: 50,
-                      decoration: BoxDecoration(
-                        color: Colors.black54,
-                        borderRadius: BorderRadius.circular(25),
-                        border: Border.all(width: 1, color: Colors.grey),
-                      ),
-                      child: const Icon(
-                        Icons.close,
-                        size: 35,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  Container(
-                    width: double.infinity,
-                    child: const Text(
-                      'Cancel',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
+          // Positioned(
+          //   bottom: 0,
+          //   left: 0,
+          //   right: 0,
+          //   child: Container(
+          //     height: searchingServiceProviderContainerHeight,
+          //     decoration: const BoxDecoration(
+          //       color: Colors.white,
+          //       borderRadius: BorderRadius.only(
+          //         topLeft: Radius.circular(16),
+          //         topRight: Radius.circular(16),
+          //       ),
+          //     ),
+          //     child: Column(
+          //       crossAxisAlignment: CrossAxisAlignment.center,
+          //       children: [
+          //         const LinearProgressIndicator(
+          //           color: Colors.green,
+          //         ),
+          //         const SizedBox(
+          //           height: 10,
+          //         ),
+          //         const Center(
+          //           child: Text(
+          //             "Searching For Service Provider...",
+          //             style: TextStyle(
+          //               color: Colors.grey,
+          //               fontWeight: FontWeight.bold,
+          //             ),
+          //           ),
+          //         ),
+          //         const SizedBox(
+          //           height: 20,
+          //         ),
+          //         GestureDetector(
+          //           onTap: () {
+          //             referenceRequest!.remove();
+          //             setState(() {
+          //               searchLocationContainerHeight = 0;
+          //               suggestedRidesContainerHeight = 0;
+          //               searchingServiceProviderContainerHeight = 0;
+          //             });
+          //           },
+          //           child: Container(
+          //             height: 50,
+          //             width: 50,
+          //             decoration: BoxDecoration(
+          //               color: Colors.black54,
+          //               borderRadius: BorderRadius.circular(25),
+          //               border: Border.all(width: 1, color: Colors.grey),
+          //             ),
+          //             child: const Icon(
+          //               Icons.close,
+          //               size: 35,
+          //             ),
+          //           ),
+          //         ),
+          //         const SizedBox(
+          //           height: 15,
+          //         ),
+          //         Container(
+          //           width: double.infinity,
+          //           child: const Text(
+          //             'Cancel',
+          //             textAlign: TextAlign.center,
+          //             style: TextStyle(
+          //               color: Colors.red,
+          //               fontSize: 15,
+          //               fontWeight: FontWeight.bold,
+          //             ),
+          //           ),
+          //         )
+          //       ],
+          //     ),
+          //   ),
+          // ),
 
           Positioned(
             bottom: 60,

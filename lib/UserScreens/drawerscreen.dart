@@ -1,15 +1,21 @@
 import 'dart:typed_data';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:onroadvehiclebreakdowwn/Common/toast.dart';
 import 'package:onroadvehiclebreakdowwn/UserScreens/editprofile.dart';
+import 'package:onroadvehiclebreakdowwn/UserScreens/history.dart';
 import 'package:onroadvehiclebreakdowwn/UserScreens/userlogin.dart';
 import 'package:onroadvehiclebreakdowwn/global/global.dart';
+import 'package:onroadvehiclebreakdowwn/models/retrievedata.dart';
 
 class DrawerScreen extends StatefulWidget {
-  const DrawerScreen({super.key});
+  Retrievedata? userHistory;
+
+  DrawerScreen({super.key, required this.userHistory});
 
   @override
   State<DrawerScreen> createState() => _DrawerScreenState();
@@ -236,7 +242,14 @@ class _DrawerScreenState extends State<DrawerScreen> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(30, 20, 4, 0),
                           child: GestureDetector(
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => History(
+                                            userHistory: widget.userHistory,
+                                          )));
+                            },
                             child: const Text(
                               "History",
                               style:
@@ -256,8 +269,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            // FirebaseAuth.instance.signOut();
-                            // // showToast(message: "User Logged Out");
+                            FirebaseAuth.instance.signOut();
+                            showToast(message: "User Logged Out");
                           },
                           child: const Padding(
                             padding: EdgeInsets.fromLTRB(60, 0, 0, 10),
