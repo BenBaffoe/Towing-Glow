@@ -87,7 +87,7 @@ class _SignUpState extends State<SignUp> {
                   topLeft: Radius.circular(20),
                 )),
             height: double.infinity,
-            width: 410,
+            width: double.infinity,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(14, 50, 14, 0),
               child: Expanded(

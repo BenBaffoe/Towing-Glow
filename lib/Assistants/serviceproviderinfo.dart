@@ -4,10 +4,14 @@ class ServiceProviderInfo {
   LatLng? serivceProviderLocation;
   String? serivceProviderName;
   String? serivceProviderPhone;
+  String? serivceProviderLocationAddress;
+  String? time;
 
   ServiceProviderInfo({
     this.serivceProviderLocation,
     this.serivceProviderName,
     this.serivceProviderPhone,
+    this.serivceProviderLocationAddress,
+    this.time,
   });
 }

@@ -23,7 +23,7 @@ class _SplashScreenState extends State<SplashScreen> {
         firebaseAuth.currentUser != null
             ? AssistantMethods.readCurrentOnlineUserInfo()
             : null;
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (c) => const SplashScreen(
@@ -32,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
           ),
         );
       } else {
-        Navigator.push(
+        Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (c) => const Userhome()));
       }
     });

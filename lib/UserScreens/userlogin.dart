@@ -1,13 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:onroadvehiclebreakdowwn/UserScreens/forgotpassword.dart';
 import 'package:onroadvehiclebreakdowwn/UserScreens/signup.dart';
 import 'package:onroadvehiclebreakdowwn/UserScreens/userhome.dart';
 import 'package:onroadvehiclebreakdowwn/User_auth/firebase_auth_impementation.dart';
 import 'package:onroadvehiclebreakdowwn/Common/toast.dart';
 import 'package:onroadvehiclebreakdowwn/global/global.dart';
+import 'package:onroadvehiclebreakdowwn/models/user_modals.dart';
 
 class UserLogin extends StatefulWidget {
   const UserLogin({super.key});
@@ -44,7 +47,7 @@ class _UserLoginState extends State<UserLogin> {
         backgroundColor: const Color.fromARGB(255, 90, 228, 168),
         title: const Text(
           "Towing Glow",
-          style: TextStyle(fontWeight: FontWeight.w200, color: Colors.white),
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         centerTitle: true,
       ),
@@ -95,10 +98,13 @@ class _UserLoginState extends State<UserLogin> {
                 ),
               ],
             ),
+            SizedBox(
+              height: 60,
+            ),
             Expanded(
               child: Container(
                 height: double.infinity,
-                width: 410,
+                width: double.infinity,
                 decoration: const BoxDecoration(
                   color: Color.fromARGB(255, 240, 241, 235),
                   borderRadius: BorderRadius.only(
@@ -113,78 +119,116 @@ class _UserLoginState extends State<UserLogin> {
                       child: ListView(
                         children: [
                           const SizedBox(
-                            height: 50,
+                            height: 60,
                           ),
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(14, 10, 14, 8.0),
-                            child: TextFormField(
-                              controller: _emailController,
-                              validator: (value) {
-                                if (value!.isEmpty ||
-                                    !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                                        .hasMatch(value)) {
-                                  return "Please enter a valid email";
-                                }
-                                return null;
-                              },
-                              decoration: const InputDecoration(
-                                fillColor: Colors.white,
-                                filled: true,
-                                labelText: "Email",
-                                labelStyle: TextStyle(color: Colors.black),
-                                focusedBorder: OutlineInputBorder(
+                            padding: const EdgeInsets.fromLTRB(14, 10, 14, 0),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: TextFormField(
+                                controller: _emailController,
+                                validator: (value) {
+                                  if (value!.isEmpty ||
+                                      !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                                          .hasMatch(value)) {
+                                    return "Please enter a valid email";
+                                  }
+                                  return null;
+                                },
+                                decoration: const InputDecoration(
+                                  fillColor: Colors.white,
+                                  filled: true,
+                                  labelText: "Email",
+                                  labelStyle: TextStyle(color: Colors.black),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.white),
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(14),
+                                      )),
+                                  enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(color: Colors.white),
                                     borderRadius: BorderRadius.all(
                                       Radius.circular(14),
-                                    )),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white),
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(14),
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
                           const SizedBox(
-                            height: 50,
+                            height: 8,
                           ),
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(14, 20, 14, 8.0),
-                            child: TextFormField(
-                              controller: _passwordController,
-                              validator: (value) {
-                                if (value!.isEmpty ||
-                                    !RegExp(r'^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$')
-                                        .hasMatch(value)) {
-                                  return "at least 8 characters,must have numeric or special characters";
-                                }
-                                return null;
-                              },
-                              decoration: const InputDecoration(
-                                fillColor: Colors.white,
-                                filled: true,
-                                labelText: "Password",
-                                labelStyle: TextStyle(color: Colors.black),
-                                focusedBorder: OutlineInputBorder(
+                            padding: const EdgeInsets.fromLTRB(14, 8, 14, 8.0),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: TextFormField(
+                                controller: _passwordController,
+                                validator: (value) {
+                                  if (value!.isEmpty ||
+                                      !RegExp(r'^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$')
+                                          .hasMatch(value)) {
+                                    return "at least 8 characters,must have numeric or special characters";
+                                  }
+                                  return null;
+                                },
+                                decoration: const InputDecoration(
+                                  fillColor: Colors.white,
+                                  filled: true,
+                                  labelText: "Password",
+                                  labelStyle: TextStyle(color: Colors.black),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.white),
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(14),
+                                      )),
+                                  enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(color: Colors.white),
                                     borderRadius: BorderRadius.all(
                                       Radius.circular(14),
-                                    )),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white),
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(14),
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
                           const SizedBox(
-                            height: 70,
+                            height: 20,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                    14, 4.0, 12.0, 0.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const Forgotpassword()));
+                                  },
+                                  child: const Text(
+                                    "Forgot password ?",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: const Color.fromARGB(
+                                          255, 90, 228, 168),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 10,
                           ),
                           Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.fromLTRB(14, 0, 14, 0),
                             child: ElevatedButton(
                               onPressed: _submit,
                               style: ElevatedButton.styleFrom(
@@ -209,20 +253,21 @@ class _UserLoginState extends State<UserLogin> {
                                     ),
                             ),
                           ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          const Center(
+                            child: Text(
+                              'Create have an account ?',
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                          ),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Padding(
-                                padding:
-                                    EdgeInsets.fromLTRB(14, 4.0, 12.0, 0.0),
-                                child: Text(
-                                  "Forgot password ? click here",
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w800),
-                                ),
-                              ),
                               Padding(
                                 padding:
                                     const EdgeInsets.fromLTRB(1.0, 0, 0, 0),
@@ -239,11 +284,11 @@ class _UserLoginState extends State<UserLogin> {
                                     backgroundColor: Colors.transparent,
                                   ),
                                   child: const Text(
-                                    'Click here to sign up',
+                                    'Register',
                                     style: TextStyle(
                                         color:
                                             Color.fromARGB(255, 90, 228, 168),
-                                        fontSize: 14,
+                                        fontSize: 18,
                                         fontWeight: FontWeight.w600),
                                   ),
                                 ),
@@ -291,34 +336,50 @@ class _UserLoginState extends State<UserLogin> {
 //   }
 
   void _submit() async {
-    if (formKey2.currentState!.validate()) {
-      await firebaseAuth
-          .signInWithEmailAndPassword(
-              email: _emailController.text, password: _passwordController.text)
-          .then((auth) async {
-        DatabaseReference userRef =
-            FirebaseDatabase.instance.ref().child("userInfo");
-
-        userRef.child(firebaseAuth.currentUser!.uid).once().then((value) async {
-          final snap = value.snapshot;
-          if (snap.value != null) {
-            currentUser = auth.user;
-            await Fluttertoast.showToast(msg: "Login Successful");
-            Navigator.push(
-                context, MaterialPageRoute(builder: (c) => const Userhome()));
-          } else {
-            await Fluttertoast.showToast(msg: "No record exists");
-            firebaseAuth.signOut();
-            Navigator.push(
-                context, MaterialPageRoute(builder: (c) => const Userhome()));
-          }
-        });
-      }).catchError((err) {
-        Fluttertoast.showToast(msg: "Error: " + err.message);
+    try {
+      setState(() {
+        isLoading = true;
       });
-    } else {
-      Fluttertoast.showToast(
-          msg: "Some inputs in the text field are not valid");
+      if (formKey2.currentState!.validate()) {
+        await firebaseAuth
+            .signInWithEmailAndPassword(
+                email: _emailController.text,
+                password: _passwordController.text)
+            .then((auth) async {
+          DatabaseReference userRef =
+              FirebaseDatabase.instance.ref().child("userInfo");
+
+          userRef
+              .child(firebaseAuth.currentUser!.uid)
+              .once()
+              .then((value) async {
+            final snap = value.snapshot;
+            if (snap.value != null) {
+              currentUser = auth.user;
+              globalUser =
+                  UserModel.fromSnapshot(snap); // Store user data globally
+              await Fluttertoast.showToast(msg: "Login Successful");
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (c) => const Userhome()));
+            } else {
+              await Fluttertoast.showToast(msg: "No record exists");
+              firebaseAuth.signOut();
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (c) => const UserLogin()));
+            }
+          });
+        }).catchError((err) {
+          Fluttertoast.showToast(msg: "Error: " + err.message);
+        });
+      } else {
+        Fluttertoast.showToast(
+            msg: "Some inputs in the text field are not valid");
+      }
+    } catch (e) {
+      print(e);
     }
+    setState(() {
+      isLoading = false;
+    });
   }
 }

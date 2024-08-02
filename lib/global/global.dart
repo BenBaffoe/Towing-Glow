@@ -11,6 +11,8 @@ UserModel? userModelCurrentInfo;
 
 String driverCarDetails = "";
 
+UserModel? globalUser;
+
 String driverName = "";
 
 String cloudMessagingServerToken = "";
@@ -33,6 +35,13 @@ final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
 User? currentUser;
 
+LatLng? driverPosition;
+
+const String StripePublicKey =
+    "pk_test_51PhSpLDBSBsOjpSFMy74OjlDjudb4edRfLI6yJzgyEiop8usiydm4jyLHxfSSFX7sY5kNRJhPlvYXRKSRVMt7Wnh00YeF54Vhf";
+const Stribesecretkey =
+    "sk_test_51PhSpLDBSBsOjpSFIFryaaGX7XmwVBb9RTnL0PQlaHV7OhpjY2qqIvR6iHHifChnFOlneguM8LR05OICqwEfJcBi00jPEZKpcT";
+
 // UserModel? u serModelCurrentInfo;
 
 // Future<void> getData(String _nameController, String _emailController,
@@ -50,7 +59,8 @@ User? currentUser;
 //       .catchError((error) => print('Failed to add user'));
 // }
 
-String username = "";
+String paystackApi = "sk_test_be297806a4038777e387f3f3f02dc9dc0cc371ad";
+String password = "pk_test_c4273ad5f236a8dc96ae447f3311d0b52ef4e259";
 String googlesMapKey = "AIzaSyBqtAzED0r5rQvQjsncU10np2bIAUsg6ZY";
 const CameraPosition googlePlexIntitialPosition = CameraPosition(
     bearing: 244.64,
