@@ -1,7 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:onroadvehiclebreakdowwn/Assistants/hhhh.dart';
+import 'package:onroadvehiclebreakdowwn/Assistants/serviceinfo.dart';
 import 'package:onroadvehiclebreakdowwn/Assistants/serviceproviderinfo.dart';
 import 'package:onroadvehiclebreakdowwn/global/global.dart';
 import 'package:onroadvehiclebreakdowwn/models/historyinfo.dart';
@@ -146,6 +146,8 @@ class _HistoryState extends State<History> {
     return Scaffold(
       appBar: AppBar(
         title: Text('History'),
+        leading: Icon(Icons.arrow_back_ios),
+        centerTitle: true,
         actions: [
           IconButton(
             icon: Icon(Icons.delete),

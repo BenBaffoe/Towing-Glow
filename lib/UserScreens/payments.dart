@@ -5,12 +5,15 @@ class Transaction {
   final String reference;
   final String email;
   final String currency;
+  final List<String> channels;
 
-  Transaction(
-      {required this.amount,
-      required this.reference,
-      required this.email,
-      required this.currency});
+  Transaction({
+    required this.amount,
+    required this.reference,
+    required this.email,
+    required this.currency,
+    required this.channels,
+  });
 
   factory Transaction.fromJson(Map<String, dynamic> json) {
     return Transaction(
@@ -18,6 +21,7 @@ class Transaction {
       reference: json['reference'],
       currency: json['currency'],
       email: json['email'],
+      channels: List<String>.from(json['channels']),
     );
   }
 
@@ -26,7 +30,8 @@ class Transaction {
       'amount': amount,
       'reference': reference,
       'currency': currency,
-      'email': email
+      'email': email,
+      'channels': channels,
     };
   }
 }

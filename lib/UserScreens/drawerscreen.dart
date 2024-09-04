@@ -237,7 +237,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                               );
                             },
                             child: const Text(
-                              "Paymnets",
+                              "Payments",
                               style:
                                   TextStyle(fontSize: 18, color: Colors.black),
                             ),

@@ -26,14 +26,12 @@ class _SplashScreenState extends State<SplashScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (c) => const SplashScreen(
-              child: Screen(),
-            ),
+            builder: (c) => const Screen(),
           ),
         );
       } else {
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (c) => const Userhome()));
+            context, MaterialPageRoute(builder: (c) => const SignUp()));
       }
     });
   }
@@ -61,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen> {
           children: [
             CircleAvatar(
               radius: 60,
-              backgroundImage: AssetImage("assets/logo.jfif"),
+              backgroundImage: AssetImage("c"),
             ),
             SizedBox(
               height: 20,

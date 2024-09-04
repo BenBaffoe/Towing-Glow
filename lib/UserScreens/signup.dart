@@ -417,7 +417,7 @@ class _SignUpState extends State<SignUp> {
           }
           await Fluttertoast.showToast(msg: "User created");
 
-          Navigator.push(
+          Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (c) => const Userhome()));
         }).catchError((err) {
           Fluttertoast.showToast(msg: "Error: " + err.message);

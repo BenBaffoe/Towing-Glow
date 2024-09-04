@@ -169,6 +169,7 @@ class _UserhomeState extends State<Userhome> {
           "serviceID": "waiting",
           "service": serviceType,
           "vehicleType": selectedVehicleType,
+          "serviceId": "first",
         };
         referenceRequest!.set(userInformationMap);
 
@@ -938,7 +939,7 @@ class _UserhomeState extends State<Userhome> {
       ),
       barrierColor: Colors.black.withOpacity(0.4),
       builder: (context) => SizedBox(
-        height: 200,
+        height: 300,
         child: Column(
           children: [
             Column(
@@ -953,25 +954,34 @@ class _UserhomeState extends State<Userhome> {
                 const Divider(
                   thickness: 1,
                 ),
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(8.0, 0, 8, 0),
-                  child: Text(
-                    "Service request will not be cancelled\n  Once you find a service",
-                    style: TextStyle(color: Colors.black87, fontSize: 14),
-                  ),
+                SizedBox(
+                  height: 10,
                 ),
+                Column(
+                  children: [
+                    Text(
+                      "Service request will not be cancelled once  you  find a service",
+                      style: TextStyle(color: Colors.black87, fontSize: 14),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                const Divider(
+                  thickness: 1,
+                ),
+                const Column(children: [
+                  Text(
+                      "Service prices may range from as low as GHS 10  -  GHS 210"),
+                ]),
                 const SizedBox(
-                  height: 30,
+                  height: 40,
                 ),
                 ElevatedButton(
                   onPressed: () async {
                     try {
-                      await Future.delayed(const Duration(seconds: 3));
-                      setState(() {
-                        isLoading = true;
-                      });
-
-                      await Future.delayed(const Duration(seconds: 3));
+                      await Future.delayed(const Duration(seconds: 2));
 
                       if (context != null) {
                         Navigator.pop(context);

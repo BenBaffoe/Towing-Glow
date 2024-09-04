@@ -22,7 +22,7 @@ class _ScreenState extends State<Screen> {
             const CircleAvatar(
               radius: 70,
               backgroundImage: AssetImage(
-                "assets/logo.jfif",
+                "assets/download.jpeg",
               ),
             ),
             const Padding(

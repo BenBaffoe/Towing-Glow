@@ -61,7 +61,7 @@ const Stribesecretkey =
 
 String paystackApi = "sk_test_be297806a4038777e387f3f3f02dc9dc0cc371ad";
 String password = "pk_test_c4273ad5f236a8dc96ae447f3311d0b52ef4e259";
-String googlesMapKey = "AIzaSyBqtAzED0r5rQvQjsncU10np2bIAUsg6ZY";
+String googlesMapKey = "AIzaSyB4-gptc_ZTAuw3ermXoDTBgCh_57bp57w";
 const CameraPosition googlePlexIntitialPosition = CameraPosition(
     bearing: 244.64,
     target: LatLng(6.6833, -1.6163),

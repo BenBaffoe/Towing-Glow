@@ -71,11 +71,16 @@ class AssistantMethods {
     directionsDetailsInfo.ePoints =
         responseDirectionsApi["routes"][0]["overview_polyline"]["points"];
 
-    var convert = double.parse(responseDirectionsApi["routes"][0]["legs"][0]
-            ["distance"]['text']
-        .split(" ")[0]);
+    // var convert =
+    //     responseDirectionsApi["routes"][0]["legs"][0]["distance"]["text"];
 
-    convert = (convert / 3281);
+    // convert = (convert / 3281);
+
+    var distanceText =
+        responseDirectionsApi["routes"][0]["legs"][0]["distance"]['text'];
+    var distanceValue = double.parse(distanceText.replaceAll(RegExp(r'[^\d\.]'),
+        '')); // Remove non-numeric characters and parse to double
+    var convert = distanceValue / 3281;
 
     directionsDetailsInfo.distanceText = convert.toString();
 

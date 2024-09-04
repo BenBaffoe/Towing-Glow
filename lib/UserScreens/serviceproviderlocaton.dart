@@ -6,6 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:onroadvehiclebreakdowwn/Assistants/assitant_method.dart';
 import 'package:onroadvehiclebreakdowwn/Assistants/serviceproviderinfo.dart';
+import 'package:onroadvehiclebreakdowwn/UserScreens/localNotification.dart';
 import 'package:onroadvehiclebreakdowwn/global/global.dart';
 import 'package:onroadvehiclebreakdowwn/main.dart';
 import 'package:onroadvehiclebreakdowwn/models/directions_details_info.dart';
@@ -46,26 +47,26 @@ class _ServiceproviderlocationState extends State<Serviceproviderlocation> {
         .animateCamera(CameraUpdate.newCameraPosition(newCameraPosition));
   }
 
-  Future<void> _showNotification() async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
-      'location_channel_id',
-      'Location Channel',
-      channelDescription: 'Channel for location notifications',
-      importance: Importance.max,
-      priority: Priority.high,
-    );
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
+  // Future<void> _showNotification() async {
+  //   const AndroidNotificationDetails androidPlatformChannelSpecifics =
+  //       AndroidNotificationDetails(
+  //     'location_channel_id',
+  //     'Location Channel',
+  //     channelDescription: 'Channel for location notifications',
+  //     importance: Importance.max,
+  //     priority: Priority.high,
+  //   );
+  //   const NotificationDetails platformChannelSpecifics =
+  //       NotificationDetails(android: androidPlatformChannelSpecifics);
 
-    await flutterLocalNotificationsPlugin.show(
-      0,
-      'Service Provider Has Arrived!',
-      'Call',
-      platformChannelSpecifics,
-      payload: 'item x',
-    );
-  }
+  //   await flutterLocalNotificationsPlugin.show(
+  //     2,
+  //     'Service Provider Has Arrived!',
+  //     'Call',
+  //     platformChannelSpecifics,
+  //     payload: 'item x',
+  //   );
+  // }
 
   Future<void> locateServicePosition() async {
     Position currentPosition = await Geolocator.getCurrentPosition(
@@ -94,7 +95,7 @@ class _ServiceproviderlocationState extends State<Serviceproviderlocation> {
         driverPosition!.latitude == serviceProviderLocation!.latitude &&
         driverPosition!.longitude == serviceProviderLocation!.longitude) {
       // Show notification if the locations are the same
-      _showNotification();
+      // _showNotification();
 
       // Add a small offset to service provider's location to prevent repeated notifications
       serviceProviderLocation = LatLng(
@@ -156,139 +157,161 @@ class _ServiceproviderlocationState extends State<Serviceproviderlocation> {
           topRight: Radius.circular(50),
         ),
       ),
-      builder: (context) => GestureDetector(
-        onTap: () {
-          // Navigator.of(context, rootNavigator: true).pop();
-        },
-        child: Container(
-          color: Colors.white,
-          height: 320,
-          child: Column(
-            children: [
-              const LinearProgressIndicator(color: Colors.green),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    const Text(
-                      "Service Provider Arriving in....",
-                      style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      "$duration", // Show duration here
-                      style: const TextStyle(
-                          color: Colors.black87,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
-                child: Row(
-                  children: [
-                    const Text(
-                      "Distance remaining: ",
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      distance.substring(0, 4) + " Km", // Show distance here
-                      style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Divider(
-                  thickness: 1,
-                ),
-              ),
-              Card(
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return GestureDetector(
+              onTap: () {
+                // Navigator.of(context, rootNavigator: true).pop();
+              },
+              child: Container(
                 color: Colors.white,
-                child: Row(
+                height: 320,
+                child: Column(
                   children: [
-                    const SizedBox(height: 10),
+                    const LinearProgressIndicator(color: Colors.green),
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 50),
-                      child: Column(
+                      padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
+                      child: Row(
                         children: [
-                          CircleAvatar(
-                            radius: 45,
-                            backgroundColor: Colors.white,
-                            child: Image.asset(
-                              "assets/pensioner-man-with-medical-mask-is-driving-red-car-foreground-vector-flat-illustration_531064-1742.jpg",
-                              height: 75,
-                              width: 75,
+                          const Text(
+                            "Distance remaining: ",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          distance.isEmpty
+                              ? const Text("Loading...")
+                              : Text(
+                                  distance.substring(0, 4) +
+                                      " Km", // Show distance here
+                                  style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          const Text(
+                            "Service Provider Arriving in:",
+                            style: TextStyle(
+                                color: Colors.black87,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          duration.isEmpty
+                              ? const Text("Loading...")
+                              : Text(
+                                  "$duration", // Show duration here
+                                  style: const TextStyle(
+                                      color: Colors.black87,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Divider(
+                        thickness: 1,
+                      ),
+                    ),
+                    Card(
+                      color: Colors.white,
+                      child: Row(
+                        children: [
+                          const SizedBox(height: 10),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 50),
+                            child: Column(
+                              children: [
+                                CircleAvatar(
+                                  radius: 45,
+                                  backgroundColor: Colors.white,
+                                  child: Image.asset(
+                                    "assets/pensioner-man-with-medical-mask-is-driving-red-car-foreground-vector-flat-illustration_531064-1742.jpg",
+                                    height: 75,
+                                    width: 75,
+                                  ),
+                                ),
+                                const SizedBox(width: 20),
+                              ],
                             ),
                           ),
-                          const SizedBox(width: 20),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.fromLTRB(8.0, 8.0, 40, 40),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.person,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(
+                                      width: 8,
+                                    ),
+                                    Text(
+                                      "${widget.serviceProviderInfo!.serivceProviderName!}",
+                                      style: const TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.phone,
+                                      size: 20,
+                                    ),
+                                    SizedBox(
+                                      width: 8,
+                                    ),
+                                    Text(
+                                      "0${widget.serviceProviderInfo!.serivceProviderPhone!}",
+                                      style: const TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                    SizedBox(
-                      width: 10,
-                    ),
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(8.0, 8.0, 40, 40),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
                         children: [
+                          SizedBox(
+                            width: 8,
+                          ),
                           Text(
-                            "${widget.serviceProviderInfo!.serivceProviderName!}",
+                            "Click on the menu icon and select payments to \n make payment to the service provider",
                             style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 17,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.phone,
-                                size: 20,
-                              ),
-                              SizedBox(
-                                width: 8,
-                              ),
-                              Text(
-                                "0${widget.serviceProviderInfo!.serivceProviderPhone!}",
-                                style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w500),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.phone,
-                                size: 20,
-                              ),
-                              SizedBox(
-                                width: 8,
-                              ),
-                              Text(
-                                "Click on the menu icon and select payments to \n make payment to the service provider",
-                                style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w500),
-                              ),
-                            ],
+                                color: Colors.green,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
@@ -296,10 +319,10 @@ class _ServiceproviderlocationState extends State<Serviceproviderlocation> {
                   ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -319,7 +342,7 @@ class _ServiceproviderlocationState extends State<Serviceproviderlocation> {
   @override
   void initState() {
     super.initState();
-
+    LocalNotifications.cancel(3);
     locateServicePosition().then((_) {
       getPolylinePoints().then((coordinates) {
         if (coordinates.isNotEmpty) {

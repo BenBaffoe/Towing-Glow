@@ -9,6 +9,7 @@ import 'package:onroadvehiclebreakdowwn/UserScreens/serviceproviderlocaton.dart'
 import 'package:onroadvehiclebreakdowwn/UserScreens/splashscreen.dart';
 import 'package:onroadvehiclebreakdowwn/UserScreens/userhome.dart';
 import 'package:onroadvehiclebreakdowwn/UserScreens/userlogin.dart';
+import 'package:onroadvehiclebreakdowwn/pages/screen.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -57,7 +58,9 @@ class MyApp extends StatelessWidget {
           //       payload: null,
           //     ),
         },
-        home: const UserLogin(),
+        home: const SplashScreen(
+          child: Screen(),
+        ),
       ),
     );
   }

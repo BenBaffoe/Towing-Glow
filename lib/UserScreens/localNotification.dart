@@ -49,7 +49,7 @@ class LocalNotifications {
     const NotificationDetails notificationDetails =
         NotificationDetails(android: androidNotificationDetails);
     await _flutterLocalNotificationsPlugin
-        .show(0, title, body, notificationDetails, payload: payload);
+        .show(3, title, body, notificationDetails, payload: payload);
   }
 
   // close a specific notification
